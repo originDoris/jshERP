@@ -97,4 +97,10 @@ public class SequenceService {
             return buildOnlyNumber.toString();
         }
     }
+
+    @Transactional(value = "transactionManager", rollbackFor = Exception.class)
+    public String buildOnlyNumber(String prefix)throws Exception{
+        String code = buildOnlyNumber();
+        return prefix + code;
+    }
 }

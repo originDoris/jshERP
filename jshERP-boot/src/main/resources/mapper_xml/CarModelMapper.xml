@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsh.erp.datasource.mappers.CarModelMapper">
+  <resultMap id="BaseResultMap" type="com.jsh.erp.datasource.entities.CarModel">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="car_vin"  property="carVin" />
+    <result column="car_model" property="carModel" />
+    <result column="car_Series" property="carSeries" />
+    <result column="car_engine" property="carEngine" />
+    <result column="car_brand" property="carBrand" />
+    <result column="car_group" property="carGroup" />
+    <result column="car_gearbox" property="carGearbox" />
+    <result column="car_cc" property="carCc" />
+    <result column="creator" property="creator" />
+    <result column="modifier" property="modifier" />
+    <result column="create_time" property="createTime" />
+    <result column="update_time" property="updateTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id,car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time
+  </sql>
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.CarModel">
+    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time)
+        value(#{carVin},#{carModel},#{carSeries},#{carEngine},#{carBrand},#{carGroup},#{carGearbox},#{carCc},#{creator},#{modifier},#{createTime},#{updateTime});
+  </insert>
+  <insert id="batchSave">
+    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time)
+      values
+        <foreach collection="list" open="" close="" item="carModel" separator=",">
+            (#{carModel.carVin},#{carModel.carModel},#{carModel.carSeries},#{carModel.carEngine},#{carModel.carBrand},#{carModel.carGroup},#{carModel.carGearbox},#{carModel.carCc},#{carModel.creator},#{carModel.modifier},#{carModel.createTime},#{carModel.updateTime})
+        </foreach>
+  </insert>
+  <update id="modify" parameterType="com.jsh.erp.datasource.entities.CarModel">
+    update jsh_car_model
+    <set>
+      <if test='carVin != null and carVin != ""'>
+        car_vin = #{carVin},
+      </if>
+      <if test='carModel != null and carModel != ""'>
+        car_model = #{carModel},
+      </if>
+      <if test='carSeries != null and carSeries != ""'>
+        car_series = #{carSeries},
+      </if>
+      <if test='carEngine != null and carEngine != ""'>
+        car_engine = #{carEngine},
+      </if>
+      <if test='carBrand != null and carBrand != ""'>
+        car_brand = #{carBrand},
+      </if>
+      <if test='carGroup != null and carGroup != ""'>
+        car_group = #{carGroup},
+      </if>
+      <if test='carGearbox != null and carGearbox != ""'>
+        car_gearbox = #{carGearbox},
+      </if>
+      <if test='carCc != null and carCc != ""'>
+        car_cc = #{carCc},
+      </if>
+      <if test='creator != null and creator != ""'>
+        creator = #{creator},
+      </if>
+      <if test='modifier != null and modifier != ""'>
+        modifier = #{modifier},
+      </if>
+      <if test='createTime != null and createTime != ""'>
+        create_time = #{createTime},
+      </if>
+      <if test='updateTime != null and updateTime != ""'>
+        update_time = #{updateTime},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <delete id="delete">
+    delete from jsh_car_model where id = #{id≈}
+  </delete>
+  <delete id="batchDelete">
+    delete  from jsh_car_model where id in
+                               <foreach collection="ids" open="(" close=")" item="id" separator=",">
+                                 #{id}
+                               </foreach>
+  </delete>
+  <select id="queryList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+        from jsh_car_model
+    where 1=1
+    <if test='carModelQuery.carVin != null and carModelQuery.carVin != ""'>
+      and car_vin = #{carModelQuery.carVin}
+    </if>
+    <if test='carModelQuery.carModel != null and carModelQuery.carModel != ""'>
+      and car_model = #{carModelQuery.carModel}
+    </if>
+    <if test='carModelQuery.carSeries != null and carModelQuery.carSeries != ""'>
+      and car_series = #{carModelQuery.carSeries}
+    </if>
+    <if test='carModelQuery.carEngine != null and carModelQuery.carEngine != ""'>
+      and car_engine = #{carModelQuery.carEngine}
+    </if>
+    <if test='carModelQuery.carBrand != null and carModelQuery.carBrand != ""'>
+      and car_brand = #{carModelQuery.carBrand}
+    </if>
+    <if test='carModelQuery.carGroup != null and carModelQuery.carGroup != ""'>
+      and car_group = #{carModelQuery.carGroup}
+    </if>
+    <if test='carModelQuery.carGearbox != null and carModelQuery.carGearbox != ""'>
+      and car_gearbox = #{carModelQuery.carGearbox}
+    </if>
+    <if test='carModelQuery.carCc != null and carModelQuery.carCc != ""'>
+      and car_cc = #{carCc}
+    </if>
+    order by update_time desc
+  </select>
+  <select id="detail" resultMap="BaseResultMap">
+    select * from jsh_car_model where id = #{id}
+  </select>
+  <select id="queryByIds" resultMap="BaseResultMap">
+    select * from jsh_car_model
+    where id in
+    <foreach collection="ids" separator="," item="id" close=")" open="(">
+      #{id}
+    </foreach>
+  </select>
+
+</mapper>

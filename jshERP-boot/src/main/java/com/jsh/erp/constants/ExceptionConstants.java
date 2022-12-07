@@ -504,6 +504,53 @@ public class ExceptionConstants {
 
 
     /**
+     * 车型 4001 ～4100
+     */
+    public static final int CAR_MODEL_PARAM_ERROR = 4001;
+    public static final int CAR_MODEL_ID_IS_NULL_CODE = 4002;
+    public static final String CAR_MODEL_ID_IS_NULL_MSG = "车型ID为空！";
+
+    public static final int CAR_MODEL_LIST_IS_NULL_CODE = 4003;
+
+    public static final String CAR_MODEL_LIST_IS_NULL_MSG = "车型数据列表为空！";
+
+    public static final int CAR_MODEL_ID_LIST_IS_NULL_CODE = 4004;
+    public static final String CAR_MODEL_ID_LIST_IS_NULL_MSG = "车型id列表不能为空！";
+
+    public static final int DOWNLOAD_CAR_MODEL_IS_NULL_CODE = 4005;
+    public static final String DOWNLOAD_CAR_MODEL_IS_NULL_MSG = "导出车型数据为空！";
+
+    public static final int DOWNLOAD_CAR_MODEL_FAIL_CODE = 4006;
+    public static final String DOWNLOAD_CAR_MODEL_FAIL_MSG = "车型信息下载失败！";
+
+    public static final int SAVE_CAR_MODEL_FAIL_CODE = 4007;
+    public static final String SAVE_CAR_MODEL_FAIL_MSG = "保存车型失败！";
+
+    public static final int MODIFY_CAR_MODEL_FAIL_CODE = 4006;
+    public static final String MODIFY_CAR_MODEL_FAIL_MSG = "修改车型失败！";
+
+
+    /**
+     * 配件类别 4100 ~ 4200
+     */
+    public static final int CATEGORY_ID_IS_NULL_CODE = 4101;
+    public static final String CATEGORY_ID_IS_NULL_MSG = "配件类别id为空！";
+
+    public static final int CATEGORY_LIST_IS_NULL_CODE = 4102;
+    public static final String CATEGORY_LIST_IS_NULL_MSG = "配件类别数据列表为空！";
+
+    public static final int CATEGORY_ID_LIST_IS_NULL_CODE = 4103;
+    public static final String CATEGORY_ID_LIST_IS_NULL_MSG = "配件类别id列表不能为空！";
+    public static final int CATEGORY_PARAM_ERROR = 4104;
+
+    public static final int DOWNLOAD_CATEGORY_IS_NULL_CODE = 4105;
+    public static final String DOWNLOAD_CATEGORY_IS_NULL_MSG = "导出配件类别数据为空！";
+
+    public static final int DOWNLOAD_CATEGORY_FAIL_CODE = 4106;
+    public static final String DOWNLOAD_CATEGORY_FAIL_MSG = "配件类别下载失败！";
+
+
+    /**
      * 标准正常返回/操作成功返回
      * @return
      */

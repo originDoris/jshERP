@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsh.erp.datasource.mappers.FittingsCategoryMapper">
+  <resultMap id="BaseResultMap" type="com.jsh.erp.datasource.entities.FittingsCategory">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="category_name" property="categoryName" />
+    <result column="code" property="code" />
+    <result column="creator" property="creator" />
+    <result column="modifier" property="modifier" />
+    <result column="create_time" property="createTime" />
+    <result column="update_time" property="updateTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id,code,category_name,creator,modifier,create_time,update_time
+  </sql>
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.FittingsCategory">
+    insert into jsh_fittings_category (code,category_name,creator,modifier,create_time,update_time)
+        value(#{code},#{categoryName},#{creator},#{modifier},#{createTime},#{updateTime});
+  </insert>
+  <insert id="batchSave">
+    insert into jsh_fittings_category (code,category_name,creator,modifier,create_time,update_time)
+      values
+        <foreach collection="list" open="" close="" item="category" separator=",">
+          (#{category.code},#{category.categoryName},#{category.creator},#{category.modifier},#{category.createTime},#{category.updateTime})
+        </foreach>
+  </insert>
+  <update id="modify" parameterType="com.jsh.erp.datasource.entities.FittingsCategory">
+    update jsh_fittings_category
+    <set>
+      <if test='code != null and code != ""'>
+        code = #{code},
+      </if>
+      <if test='categoryName != null and categoryName != ""'>
+        category_name = #{categoryName},
+      </if>
+      <if test='creator != null and creator != ""'>
+        creator = #{creator},
+      </if>
+      <if test='modifier != null and modifier != ""'>
+        modifier = #{modifier},
+      </if>
+      <if test='createTime != null and createTime != ""'>
+        create_time = #{createTime},
+      </if>
+      <if test='updateTime != null and updateTime != ""'>
+        update_time = #{updateTime},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <delete id="delete">
+    delete from jsh_fittings_category where id = #{id≈}
+  </delete>
+  <delete id="batchDelete">
+    delete  from jsh_fittings_category where id in
+                               <foreach collection="ids" open="(" close=")" item="id" separator=",">
+                                 #{id}
+                               </foreach>
+  </delete>
+  <select id="queryList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+        from jsh_fittings_category
+    where 1=1
+    <if test='query.code != null and query.code != ""'>
+      and code = #{query.code}
+    </if>
+    <if test='query.categoryName != null and query.categoryName != ""'>
+      and category_name = #{query.categoryName}
+    </if>
+    order by update_time desc
+  </select>
+  <select id="detail" resultMap="BaseResultMap">
+    select * from jsh_fittings_category where id = #{id}
+  </select>
+  <select id="queryByIds" resultMap="BaseResultMap">
+    select * from jsh_fittings_category
+    where id in
+    <foreach collection="ids" separator="," item="id" close=")" open="(">
+      #{id}
+    </foreach>
+  </select>
+
+</mapper>
