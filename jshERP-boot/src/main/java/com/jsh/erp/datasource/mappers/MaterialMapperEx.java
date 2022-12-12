@@ -56,6 +56,8 @@ public interface MaterialMapperEx {
 
     List<MaterialVo4Unit> findByIdWithBarCode(@Param("meId") Long meId);
 
+    MaterialVo4Unit queryByMaterialId(@Param("mId") Long mId);
+
     List<MaterialVo4Unit> findBySelectWithBarCode(@Param("idList") List<Long> idList,
                                                   @Param("q") String q,
                                                   @Param("enableSerialNumber") String enableSerialNumber,

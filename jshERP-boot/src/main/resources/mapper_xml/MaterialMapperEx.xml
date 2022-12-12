@@ -780,4 +780,7 @@
             and m.id != #{id}
         </if>
     </select>
+    <select id="queryByMaterialId" resultMap="ResultMapList">
+        select * from jsh_material_extend where material_id = #{mId}
+    </select>
 </mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsh.erp.datasource.mappers.StockCheckMapper">
+  <resultMap id="BaseResultMap" type="com.jsh.erp.datasource.entities.StockCheck">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="operator"  property="operator" />
+    <result column="stock_number" property="stockNumber" />
+    <result column="real_stock_number" property="realStockNumber" />
+    <result column="price" property="price" />
+    <result column="difference" property="difference" />
+    <result column="create_time" property="createTime" />
+    <result column="update_time" property="updateTime" />
+    <result column="code" property="code" />
+    <result column="depot_id" property="depotId" />
+    <result column="material_id" property="materialId" />
+    <result column="depotName" property="depotName" />
+    <result column="materialName" property="materialName" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id,operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id
+  </sql>
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.CarModel">
+    insert into jsh_stock_check (operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id)
+        value(#{operator},#{stockNumber},#{realStockNumber},#{price},#{difference},#{createTime},#{updateTime},#{code},#{depotId},#{materialId});
+  </insert>
+  <insert id="batchSave">
+    insert into jsh_stock_check (operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id)
+      values
+        <foreach collection="list" open="" close="" item="stock" separator=",">
+            (#{stock.operator},#{stock.stockNumber},#{stock.realStockNumber},#{stock.price},#{stock.difference},#{stock.createTime},#{stock.updateTime},#{stock.code},#{stock.depotId},#{stock.materialId})
+        </foreach>
+  </insert>
+  <update id="modify" parameterType="com.jsh.erp.datasource.entities.StockCheck">
+    update jsh_stock_check
+    <set>
+      <if test='operator != null and operator != ""'>
+        operator = #{operator},
+      </if>
+      <if test='stockNumber != null and stockNumber != ""'>
+        stock_number = #{stockNumber},
+      </if>
+      <if test='realStockNumber != null and realStockNumber != ""'>
+        real_stock_number = #{realStockNumber},
+      </if>
+      <if test='price != null and price != ""'>
+        price = #{price},
+      </if>
+      <if test='difference != null and difference != ""'>
+        difference = #{difference},
+      </if>
+      <if test='createTime != null and createTime != ""'>
+        create_time = #{createTime},
+      </if>
+      <if test='updateTime != null and updateTime != ""'>
+        update_time = #{updateTime},
+      </if>
+      <if test='code != null and code != ""'>
+        code = #{code},
+      </if>
+      <if test='depotId != null and depotId != ""'>
+        depot_id = #{depotId},
+      </if>
+      <if test='materialId != null and materialId != ""'>
+        material_id = #{materialId}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <delete id="delete">
+    delete from jsh_stock_check where id = #{id≈}
+  </delete>
+  <delete id="batchDelete">
+    delete  from jsh_stock_check where id in
+                               <foreach collection="ids" open="(" close=")" item="id" separator=",">
+                                 #{id}
+                               </foreach>
+  </delete>
+  <select id="queryList" resultMap="BaseResultMap">
+    SELECT
+    a.*,
+    b.NAME as depotName,
+    c.NAME as materialName
+    FROM
+    jsh_stock_check a
+    LEFT JOIN jsh_depot b ON a.depot_id = b.id
+    LEFT JOIN jsh_material c ON a.material_id = c.id
+    where 1=1
+    <if test='query.code != null and query.code != ""'>
+      and a.code = #{query.code}
+    </if>
+    <if test='query.materialName != null and query.materialName != ""'>
+      and b.name like concat('%',#{query.materialName},'%')
+    </if>
+    <if test='query.operator != null and query.operator != ""'>
+      and a.operator = #{query.operator}
+    </if>
+    <if test='query.startTime != null and query.startTime != ""'>
+      and a.create_time >= #{query.startTime}
+    </if>
+    <if test='query.endTime != null and query.endTime != ""'>
+      and a.create_time &lt;= #{query.endTime}
+    </if>
+  </select>
+  <select id="detail" resultMap="BaseResultMap">
+    select * from jsh_stock_check where id = #{id}
+  </select>
+  <select id="queryByIds" resultMap="BaseResultMap">
+    select * from jsh_stock_check
+    where id in
+    <foreach collection="ids" separator="," item="id" close=")" open="(">
+      #{id}
+    </foreach>
+  </select>
+
+</mapper>
