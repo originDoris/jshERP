@@ -28,7 +28,10 @@ public interface MaterialMapperEx {
             @Param("idList") List<Long> idList,
             @Param("mpList") String mpList,
             @Param("offset") Integer offset,
-            @Param("rows") Integer rows);
+            @Param("rows") Integer rows,
+            @Param("oem") String oem,
+            @Param("vin") String vin,
+            @Param("carModelCode") String carModelCode);
 
     Long countsByMaterial(
             @Param("materialParam") String materialParam,
@@ -40,7 +43,10 @@ public interface MaterialMapperEx {
             @Param("enabled") String enabled,
             @Param("remark") String remark,
             @Param("idList") List<Long> idList,
-            @Param("mpList") String mpList);
+            @Param("mpList") String mpList,
+            @Param("oem") String oem,
+            @Param("vin") String vin,
+            @Param("carModelCode") String carModelCode);
 
     Long insertSelectiveEx(Material record);
 
@@ -71,7 +77,10 @@ public interface MaterialMapperEx {
             @Param("enableSerialNumber") String enableSerialNumber,
             @Param("enableBatchNumber") String enableBatchNumber,
             @Param("remark") String remark,
-            @Param("idList") List<Long> idList);
+            @Param("idList") List<Long> idList,
+            @Param("oem") String oem,
+            @Param("vin") String vin,
+            @Param("carModelCode") String carModelCode);
     /**
      * 通过商品名称查询商品信息
      * */
@@ -119,13 +128,19 @@ public interface MaterialMapperEx {
             @Param("column") String column,
             @Param("order") String order,
             @Param("offset") Integer offset,
-            @Param("rows") Integer rows);
+            @Param("rows") Integer rows,
+            @Param("oem") String oem,
+            @Param("vin") String vin,
+            @Param("carModelCode") String carModelCode);
 
     int getListWithStockCount(
             @Param("depotList") List<Long> depotList,
             @Param("idList") List<Long> idList,
             @Param("materialParam") String materialParam,
-            @Param("zeroStock") Integer zeroStock);
+            @Param("zeroStock") Integer zeroStock,
+            @Param("oem") String oem,
+            @Param("vin") String vin,
+            @Param("carModelCode") String carModelCode);
 
     MaterialVo4Unit getTotalStockAndPrice(
             @Param("depotList") List<Long> depotList,
@@ -143,5 +158,8 @@ public interface MaterialMapperEx {
             @Param("otherField2") String otherField2,
             @Param("otherField3") String otherField3,
             @Param("unit") String unit,
-            @Param("unitId") Long unitId);
+            @Param("unitId") Long unitId,
+            @Param("oem") String oem,
+            @Param("vin") String vin,
+            @Param("carModelCode") String carModelCode);
 }

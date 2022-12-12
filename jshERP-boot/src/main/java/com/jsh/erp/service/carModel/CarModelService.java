@@ -1,7 +1,6 @@
 package com.jsh.erp.service.carModel;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.listener.PageReadListener;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsh.erp.datasource.entities.CarModel;
@@ -10,9 +9,11 @@ import com.jsh.erp.datasource.query.CarModelQuery;
 import com.jsh.erp.exception.BusinessParamCheckingException;
 import com.jsh.erp.service.carModel.excel.CarModelReadExcel;
 import com.jsh.erp.service.carModel.excel.CarModelWriteExcel;
+import com.jsh.erp.service.sequence.SequenceService;
 import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.EasyExcelUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,11 @@ public class CarModelService {
     @Resource
     private HttpServletResponse response;
 
+    @Resource
+    private SequenceService sequenceService;
+
+    public static final String CODE_PREFIX = "CX";
+
 
 
     public IPage<CarModel> queryList(CarModelQuery carModelQuery) {
@@ -72,6 +78,10 @@ public class CarModelService {
         Long userId = userService.getUserId(request);
         carModel.setCreator(userId);
         carModel.setCreateTime(new Date());
+        if (StringUtils.isBlank(carModel.getCode())) {
+            String code = sequenceService.buildOnlyNumber(CODE_PREFIX);
+            carModel.setCode(code);
+        }
         return carModelMapper.save(carModel);
     }
 
@@ -85,6 +95,10 @@ public class CarModelService {
             Long userId = userService.getUserId(request);
             carModel.setCreator(userId);
             carModel.setCreateTime(new Date());
+            if (StringUtils.isBlank(carModel.getCode())) {
+                String code = sequenceService.buildOnlyNumber(CODE_PREFIX);
+                carModel.setCode(code);
+            }
         }
         return carModelMapper.batchSave(carModels);
     }

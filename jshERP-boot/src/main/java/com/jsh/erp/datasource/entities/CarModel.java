@@ -60,6 +60,8 @@ public class CarModel implements Serializable {
 
     private Date updateTime;
 
+    private String code;
+
 
 
 

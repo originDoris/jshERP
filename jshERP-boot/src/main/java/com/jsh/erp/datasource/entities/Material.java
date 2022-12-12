@@ -1,7 +1,10 @@
 package com.jsh.erp.datasource.entities;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 
+@Data
 public class Material {
     private Long id;
 
@@ -44,6 +47,12 @@ public class Material {
     private Long tenantId;
 
     private String deleteFlag;
+
+    private String oem;
+
+    private String vin;
+
+    private String carModelCode;
 
     public Long getId() {
         return id;

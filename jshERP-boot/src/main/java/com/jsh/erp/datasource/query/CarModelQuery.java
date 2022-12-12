@@ -53,4 +53,6 @@ public class CarModelQuery extends BaseQuery {
 
     private List<Long> ids;
 
+    private String code;
+
 }

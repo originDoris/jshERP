@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service(value = "material_component")
 @MaterialResource
@@ -43,8 +44,11 @@ public class MaterialComponent implements ICommonQuery {
         String enabled = StringUtil.getInfo(search, "enabled");
         String remark = StringUtil.getInfo(search, "remark");
         String mpList = StringUtil.getInfo(search, "mpList");
+        String oem = StringUtil.getInfo(search, "oem");
+        String vin = StringUtil.getInfo(search, "vin");
+        String carModelCode = StringUtil.getInfo(search, "carModelCode");
         return materialService.select(materialParam, color, weight, expiryNum,
-                enableSerialNumber, enableBatchNumber, enabled, remark, categoryId, mpList, QueryUtils.offset(map), QueryUtils.rows(map));
+                enableSerialNumber, enableBatchNumber, enabled, remark, categoryId, mpList, QueryUtils.offset(map), QueryUtils.rows(map), oem, vin, carModelCode);
     }
 
     @Override
@@ -60,8 +64,11 @@ public class MaterialComponent implements ICommonQuery {
         String enabled = StringUtil.getInfo(search, "enabled");
         String remark = StringUtil.getInfo(search, "remark");
         String mpList = StringUtil.getInfo(search, "mpList");
+        String oem = StringUtil.getInfo(search, "oem");
+        String vin = StringUtil.getInfo(search, "vin");
+        String carModelCode = StringUtil.getInfo(search, "carModelCode");
         return materialService.countMaterial(materialParam, color, weight, expiryNum,
-                enableSerialNumber, enableBatchNumber, enabled, remark, categoryId, mpList);
+                enableSerialNumber, enableBatchNumber, enabled, remark, categoryId, mpList, oem, vin, carModelCode);
     }
 
     @Override

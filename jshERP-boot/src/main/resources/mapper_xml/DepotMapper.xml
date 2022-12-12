@@ -211,7 +211,14 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="queryByIds" resultMap="BaseResultMap">
+      select * from jsh_depot where id in
+    <foreach collection="ids" separator="," item="id" close=")" open="(">
+      #{id}
+    </foreach>
+      and delete_Flag != '1'
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update jsh_depot
     <set>
       <if test="record.id != null">

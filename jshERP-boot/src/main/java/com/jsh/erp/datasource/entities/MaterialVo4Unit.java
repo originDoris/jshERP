@@ -1,7 +1,10 @@
 package com.jsh.erp.datasource.entities;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 
+@Data
 public class MaterialVo4Unit extends Material{
 
     private String unitName;
@@ -42,6 +45,15 @@ public class MaterialVo4Unit extends Material{
      * 换算为大单位的库存
      */
     private String bigUnitStock;
+
+    private String carModelName;
+
+    private String depotName;
+
+    /**
+     * 货位
+     */
+    private String location;
 
     public String getUnitName() {
         return unitName;

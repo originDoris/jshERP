@@ -27,4 +27,8 @@ public interface MaterialCurrentStockMapper {
     int updateByPrimaryKeySelective(MaterialCurrentStock record);
 
     int updateByPrimaryKey(MaterialCurrentStock record);
+
+    List<MaterialCurrentStock> queryByIds( @Param("ids") List<Long> materialIds);
+
+    List<String> queryLocation(@Param("depotId") Long depotId, @Param("materialId") Long materialId);
 }

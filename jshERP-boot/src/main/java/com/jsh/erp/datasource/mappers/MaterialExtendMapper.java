@@ -27,4 +27,6 @@ public interface MaterialExtendMapper {
     int updateByPrimaryKeySelective(MaterialExtend record);
 
     int updateByPrimaryKey(MaterialExtend record);
+
+    List<MaterialExtend> queryByMaterialId(@Param("ids") List<Long> materialId);
 }

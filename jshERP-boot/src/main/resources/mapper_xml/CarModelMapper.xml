@@ -15,20 +15,21 @@
     <result column="modifier" property="modifier" />
     <result column="create_time" property="createTime" />
     <result column="update_time" property="updateTime" />
+    <result column="code" property="code" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id,car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time
+    id,car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code
   </sql>
   <insert id="save" parameterType="com.jsh.erp.datasource.entities.CarModel">
-    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time)
-        value(#{carVin},#{carModel},#{carSeries},#{carEngine},#{carBrand},#{carGroup},#{carGearbox},#{carCc},#{creator},#{modifier},#{createTime},#{updateTime});
+    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code)
+        value(#{carVin},#{carModel},#{carSeries},#{carEngine},#{carBrand},#{carGroup},#{carGearbox},#{carCc},#{creator},#{modifier},#{createTime},#{updateTime},#{code});
   </insert>
   <insert id="batchSave">
-    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time)
+    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code)
       values
         <foreach collection="list" open="" close="" item="carModel" separator=",">
-            (#{carModel.carVin},#{carModel.carModel},#{carModel.carSeries},#{carModel.carEngine},#{carModel.carBrand},#{carModel.carGroup},#{carModel.carGearbox},#{carModel.carCc},#{carModel.creator},#{carModel.modifier},#{carModel.createTime},#{carModel.updateTime})
+            (#{carModel.carVin},#{carModel.carModel},#{carModel.carSeries},#{carModel.carEngine},#{carModel.carBrand},#{carModel.carGroup},#{carModel.carGearbox},#{carModel.carCc},#{carModel.creator},#{carModel.modifier},#{carModel.createTime},#{carModel.updateTime},#{carModel.code})
         </foreach>
   </insert>
   <update id="modify" parameterType="com.jsh.erp.datasource.entities.CarModel">
@@ -70,6 +71,9 @@
       <if test='updateTime != null and updateTime != ""'>
         update_time = #{updateTime},
       </if>
+      <if test='code != null and code != ""'>
+        code = #{code}
+      </if>
     </set>
     where id = #{id}
   </update>
@@ -108,7 +112,10 @@
       and car_gearbox = #{carModelQuery.carGearbox}
     </if>
     <if test='carModelQuery.carCc != null and carModelQuery.carCc != ""'>
-      and car_cc = #{carCc}
+      and car_cc = #{carModelQuery.carCc}
+    </if>
+    <if test='carModelQuery.code != null and carModelQuery.code != ""'>
+      and code = #{carModelQuery.code}
     </if>
     order by update_time desc
   </select>

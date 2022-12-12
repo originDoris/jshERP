@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.constants.BusinessConstants;
 import com.jsh.erp.constants.ExceptionConstants;
 import com.jsh.erp.datasource.entities.*;
-import com.jsh.erp.datasource.mappers.DepotHeadMapperEx;
-import com.jsh.erp.datasource.mappers.DepotItemMapperEx;
-import com.jsh.erp.datasource.mappers.DepotMapper;
-import com.jsh.erp.datasource.mappers.DepotMapperEx;
+import com.jsh.erp.datasource.mappers.*;
 import com.jsh.erp.exception.BusinessRunTimeException;
 import com.jsh.erp.exception.JshException;
 import com.jsh.erp.service.log.LogService;
@@ -50,6 +47,9 @@ public class DepotService {
     private DepotHeadMapperEx depotHeadMapperEx;
     @Resource
     private DepotItemMapperEx depotItemMapperEx;
+
+    @Resource
+    private MaterialCurrentStockMapper materialCurrentStockMapper;
 
     public Depot getDepot(long id)throws Exception {
         Depot result=null;
@@ -359,5 +359,9 @@ public class DepotService {
             JshException.writeFail(logger, e);
         }
         return result;
+    }
+
+    public List<String> queryMaterialLocation(Long depotId, Long materialId){
+       return materialCurrentStockMapper.queryLocation(depotId, materialId);
     }
 }

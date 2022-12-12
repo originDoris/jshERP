@@ -17,6 +17,7 @@ import com.jsh.erp.service.userBusiness.UserBusinessService;
 import com.jsh.erp.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.jsh.erp.constants.ExceptionConstants.SERVICE_SUCCESS_CODE;
 import static com.jsh.erp.utils.ResponseJsonUtil.returnJson;
 
 /**
@@ -222,5 +224,12 @@ public class DepotController {
         } else {
             return returnJson(objectMap, ErpInfo.ERROR.name, ErpInfo.ERROR.code);
         }
+    }
+
+
+    @GetMapping("/queryMaterialLocation")
+    public BaseResponseInfo queryMaterialLocation(@RequestParam("depotId") Long depotId, @RequestParam("materialId") Long materialId) {
+        List<String> result = depotService.queryMaterialLocation(depotId, materialId);
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, result);
     }
 }

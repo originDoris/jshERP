@@ -240,6 +240,11 @@ public class MaterialCurrentStockExample {
             return (Criteria) this;
         }
 
+        public Criteria andLocationEqualTo(String value) {
+            addCriterion("location =", value, "location");
+            return (Criteria) this;
+        }
+
         public Criteria andDepotIdNotEqualTo(Long value) {
             addCriterion("depot_id <>", value, "depotId");
             return (Criteria) this;

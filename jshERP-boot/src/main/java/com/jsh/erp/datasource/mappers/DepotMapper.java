@@ -27,4 +27,6 @@ public interface DepotMapper {
     int updateByPrimaryKeySelective(Depot record);
 
     int updateByPrimaryKey(Depot record);
+
+    List<Depot> queryByIds(@Param("ids") List<Long> ids);
 }

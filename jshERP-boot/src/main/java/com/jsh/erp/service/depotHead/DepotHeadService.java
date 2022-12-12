@@ -836,7 +836,11 @@ public class DepotHeadService {
      */
     public List<DepotHead> getBillListByLinkNumberList(List<String> linkNumberList)throws Exception {
         DepotHeadExample example = new DepotHeadExample();
-        example.createCriteria().andLinkNumberIn(linkNumberList).andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
+        DepotHeadExample.Criteria criteria = example.createCriteria();
+        if (linkNumberList != null && !linkNumberList.isEmpty()) {
+            criteria.andLinkNumberIn(linkNumberList);
+        }
+        criteria.andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
         return depotHeadMapper.selectByExample(example);
     }
 

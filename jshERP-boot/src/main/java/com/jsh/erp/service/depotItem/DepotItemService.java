@@ -22,6 +22,7 @@ import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.QueryUtils;
 import com.jsh.erp.utils.StringUtil;
 import com.jsh.erp.utils.Tools;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -408,6 +409,8 @@ public class DepotItemService {
                 depotItem.setMaterialId(materialExtend.getMaterialId());
                 depotItem.setMaterialExtendId(materialExtend.getId());
                 depotItem.setMaterialUnit(rowObj.getString("unit"));
+                depotItem.setCurrentLocation(rowObj.get("currentLocation") == null ? null : rowObj.getString("currentLocation"));
+                depotItem.setAnotherLocation(rowObj.get("anotherLocation") == null ? null : rowObj.getString("anotherLocation"));
                 Material material= materialService.getMaterial(depotItem.getMaterialId());
                 if (BusinessConstants.ENABLE_SERIAL_NUMBER_ENABLED.equals(material.getEnableSerialNumber()) ||
                         BusinessConstants.ENABLE_BATCH_NUMBER_ENABLED.equals(material.getEnableBatchNumber())) {
@@ -935,7 +938,7 @@ public class DepotItemService {
     public void updateCurrentStock(DepotItem depotItem){
         updateCurrentStockFun(depotItem.getMaterialId(), depotItem.getDepotId());
         if(depotItem.getAnotherDepotId()!=null){
-            updateCurrentStockFun(depotItem.getMaterialId(), depotItem.getAnotherDepotId());
+            updateCurrentStockFun(depotItem.getMaterialId(), depotItem.getAnotherDepotId(), depotItem.getAnotherLocation());
         }
     }
 
@@ -945,16 +948,25 @@ public class DepotItemService {
      * @param dId
      */
     public void updateCurrentStockFun(Long mId, Long dId) {
-        if(mId!=null && dId!=null) {
+        updateCurrentStockFun(mId, dId, null);
+    }
+
+    public void updateCurrentStockFun(Long mId, Long dId, String location) {
+        if (mId != null && dId != null) {
             MaterialCurrentStockExample example = new MaterialCurrentStockExample();
-            example.createCriteria().andMaterialIdEqualTo(mId).andDepotIdEqualTo(dId)
+            MaterialCurrentStockExample.Criteria criteria = example.createCriteria();
+            criteria.andMaterialIdEqualTo(mId).andDepotIdEqualTo(dId)
                     .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
-            List<MaterialCurrentStock> list = materialCurrentStockMapper.selectByExample(example);
             MaterialCurrentStock materialCurrentStock = new MaterialCurrentStock();
+            if (StringUtils.isNotBlank(location)) {
+                criteria.andLocationEqualTo(location);
+                materialCurrentStock.setLocation(location);
+            }
+            List<MaterialCurrentStock> list = materialCurrentStockMapper.selectByExample(example);
             materialCurrentStock.setMaterialId(mId);
             materialCurrentStock.setDepotId(dId);
-            materialCurrentStock.setCurrentNumber(getStockByParam(dId,mId,null,null));
-            if(list!=null && list.size()>0) {
+            materialCurrentStock.setCurrentNumber(getStockByParam(dId, mId, null, null));
+            if (list != null && list.size() > 0) {
                 Long mcsId = list.get(0).getId();
                 materialCurrentStock.setId(mcsId);
                 materialCurrentStockMapper.updateByPrimaryKeySelective(materialCurrentStock);

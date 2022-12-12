@@ -36,4 +36,7 @@ public class CarModelWriteExcel implements Serializable {
 
     @ExcelProperty("排量")
     private String carCc;
+
+    @ExcelProperty("车型代码")
+    private String code;
 }

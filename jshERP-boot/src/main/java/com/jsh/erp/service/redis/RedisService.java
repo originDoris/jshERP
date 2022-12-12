@@ -27,16 +27,6 @@ public class RedisService {
 
     public static final String ACCESS_TOKEN = "X-Access-Token";
 
-    @Autowired(required = false)
-    public void setRedisTemplate(RedisTemplate redisTemplate) {
-        RedisSerializer stringSerializer = new StringRedisSerializer();
-        redisTemplate.setKeySerializer(stringSerializer);
-        redisTemplate.setValueSerializer(stringSerializer);
-        redisTemplate.setHashKeySerializer(stringSerializer);
-        redisTemplate.setHashValueSerializer(stringSerializer);
-        this.redisTemplate = redisTemplate;
-    }
-
     /**
      * @author jisheng hua
      * description:

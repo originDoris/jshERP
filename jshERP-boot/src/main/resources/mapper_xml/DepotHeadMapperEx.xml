@@ -436,7 +436,7 @@
             and (me.bar_code like #{bindKey} or m.name like #{bindKey} or m.standard like #{bindKey} or m.model like #{bindKey})
         </if>
         and ifnull(dh.delete_flag,'0') !='1'
-        group by di.material_id
+        group by di.material_id, me.bar_code, m.name,m.Model,m.standard,mc.name
         <if test="offset != null and rows != null">
             limit #{offset},#{rows}
         </if>

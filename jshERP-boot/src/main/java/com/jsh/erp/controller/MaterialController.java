@@ -78,11 +78,14 @@ public class MaterialController {
                                @RequestParam("standard") String standard, @RequestParam("mfrs") String mfrs,
                                @RequestParam("otherField1") String otherField1, @RequestParam("otherField2") String otherField2,
                                @RequestParam("otherField3") String otherField3, @RequestParam("unit") String unit,@RequestParam("unitId") Long unitId,
+                               @RequestParam(value = "oem",required = false) String oem,
+                               @RequestParam(value = "vin",required = false) String vin,
+                               @RequestParam(value = "carModelCode",required = false) String carModelCode,
                                HttpServletRequest request)throws Exception {
         Map<String, Object> objectMap = new HashMap<String, Object>();
         int exist = materialService.checkIsExist(id, name, StringUtil.toNull(model), StringUtil.toNull(color),
                 StringUtil.toNull(standard), StringUtil.toNull(mfrs), StringUtil.toNull(otherField1),
-                StringUtil.toNull(otherField2), StringUtil.toNull(otherField3), StringUtil.toNull(unit), unitId);
+                StringUtil.toNull(otherField2), StringUtil.toNull(otherField3), StringUtil.toNull(unit), unitId, oem, vin, carModelCode);
         if(exist > 0) {
             objectMap.put("status", true);
         } else {
@@ -324,6 +327,9 @@ public class MaterialController {
                             @RequestParam(value = "enableBatchNumber", required = false) String enableBatchNumber,
                             @RequestParam(value = "remark", required = false) String remark,
                             @RequestParam(value = "mpList", required = false) String mpList,
+                            @RequestParam(value = "oem",required = false) String oem,
+                            @RequestParam(value = "vin",required = false) String vin,
+                            @RequestParam(value = "carModelCode",required = false) String carModelCode,
                             HttpServletRequest request, HttpServletResponse response) {
         try {
             String[] mpArr = new String[]{};
@@ -332,8 +338,8 @@ public class MaterialController {
             }
             List<MaterialVo4Unit> dataList = materialService.exportExcel(StringUtil.toNull(materialParam), StringUtil.toNull(color),
                     StringUtil.toNull(weight), StringUtil.toNull(expiryNum), StringUtil.toNull(enabled), StringUtil.toNull(enableSerialNumber),
-                    StringUtil.toNull(enableBatchNumber), StringUtil.toNull(remark), StringUtil.toNull(categoryId));
-            String[] names = {"条码", "名称", "规格", "型号", "颜色", "类别", "扩展信息", "单位", "基础重量", "保质期", "采购价", "零售价", "销售价", "最低售价", "备注", "状态", "序列号", "批号"};
+                    StringUtil.toNull(enableBatchNumber), StringUtil.toNull(remark), StringUtil.toNull(categoryId), oem, vin, carModelCode);
+            String[] names = {"条码", "名称", "规格", "型号", "颜色", "类别", "扩展信息", "单位", "基础重量", "保质期", "采购价", "零售价", "销售价", "最低售价", "备注", "状态", "序列号", "批号","OEM","VIN"};
             String title = "商品信息";
             List<String[]> objects = new ArrayList<>();
             if (null != dataList) {
@@ -574,6 +580,9 @@ public class MaterialController {
                                              @RequestParam("mpList") String mpList,
                                              @RequestParam("column") String column,
                                              @RequestParam("order") String order,
+                                             @RequestParam(value = "oem",required = false) String oem,
+                                             @RequestParam(value = "vin",required = false) String vin,
+                                             @RequestParam(value = "carModelCode",required = false) String carModelCode,
                                              HttpServletRequest request)throws Exception {
         BaseResponseInfo res = new BaseResponseInfo();
         Map<String, Object> map = new HashMap<>();
@@ -594,8 +603,8 @@ public class MaterialController {
                 }
             }
             List<MaterialVo4Unit> dataList = materialService.getListWithStock(depotList, idList, StringUtil.toNull(materialParam), zeroStock,
-                    StringUtil.safeSqlParse(column), StringUtil.safeSqlParse(order), (currentPage-1)*pageSize, pageSize);
-            int total = materialService.getListWithStockCount(depotList, idList, StringUtil.toNull(materialParam), zeroStock);
+                    StringUtil.safeSqlParse(column), StringUtil.safeSqlParse(order), (currentPage - 1) * pageSize, pageSize, oem, vin, carModelCode);
+            int total = materialService.getListWithStockCount(depotList, idList, StringUtil.toNull(materialParam), zeroStock, oem, vin, carModelCode);
             MaterialVo4Unit materialVo4Unit= materialService.getTotalStockAndPrice(depotList, idList, StringUtil.toNull(materialParam));
             map.put("total", total);
             map.put("currentStock", materialVo4Unit.getCurrentStock());
