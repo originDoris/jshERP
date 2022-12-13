@@ -15,26 +15,28 @@
     <result column="material_id" property="materialId" />
     <result column="depotName" property="depotName" />
     <result column="materialName" property="materialName" />
+    <result column="tenant_id" property="tenantId" />
+    <result column="delete_flag" property="deleteFlag" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id,operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id
+    id,operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id,delete_flag
   </sql>
-  <insert id="save" parameterType="com.jsh.erp.datasource.entities.CarModel">
-    insert into jsh_stock_check (operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id)
-        value(#{operator},#{stockNumber},#{realStockNumber},#{price},#{difference},#{createTime},#{updateTime},#{code},#{depotId},#{materialId});
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.StockCheck">
+    insert into jsh_stock_check (operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id,delete_flag)
+        value(#{operator},#{stockNumber},#{realStockNumber},#{price},#{difference},#{createTime},#{updateTime},#{code},#{depotId},#{materialId},#{deleteFlag});
   </insert>
   <insert id="batchSave">
-    insert into jsh_stock_check (operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id)
+    insert into jsh_stock_check (operator,stock_number,real_stock_number,price,difference,create_time,update_time,code,depot_id,material_id,delete_flag)
       values
         <foreach collection="list" open="" close="" item="stock" separator=",">
-            (#{stock.operator},#{stock.stockNumber},#{stock.realStockNumber},#{stock.price},#{stock.difference},#{stock.createTime},#{stock.updateTime},#{stock.code},#{stock.depotId},#{stock.materialId})
+            (#{stock.operator},#{stock.stockNumber},#{stock.realStockNumber},#{stock.price},#{stock.difference},#{stock.createTime},#{stock.updateTime},#{stock.code},#{stock.depotId},#{stock.materialId},#{stock.deleteFlag})
         </foreach>
   </insert>
   <update id="modify" parameterType="com.jsh.erp.datasource.entities.StockCheck">
     update jsh_stock_check
     <set>
-      <if test='operator != null and operator != ""'>
+      <if test='operator != null'>
         operator = #{operator},
       </if>
       <if test='stockNumber != null and stockNumber != ""'>
@@ -43,26 +45,29 @@
       <if test='realStockNumber != null and realStockNumber != ""'>
         real_stock_number = #{realStockNumber},
       </if>
-      <if test='price != null and price != ""'>
+      <if test='price != null'>
         price = #{price},
       </if>
       <if test='difference != null and difference != ""'>
         difference = #{difference},
       </if>
-      <if test='createTime != null and createTime != ""'>
+      <if test='createTime != null'>
         create_time = #{createTime},
       </if>
-      <if test='updateTime != null and updateTime != ""'>
+      <if test='updateTime != null'>
         update_time = #{updateTime},
       </if>
       <if test='code != null and code != ""'>
         code = #{code},
       </if>
-      <if test='depotId != null and depotId != ""'>
+      <if test='depotId != null'>
         depot_id = #{depotId},
       </if>
-      <if test='materialId != null and materialId != ""'>
-        material_id = #{materialId}
+      <if test='materialId != null'>
+        material_id = #{materialId},
+      </if>
+      <if test='deleteFlag != null and deleteFlag != ""'>
+        delete_flag = #{deleteFlag}
       </if>
     </set>
     where id = #{id}
@@ -101,6 +106,10 @@
     <if test='query.endTime != null and query.endTime != ""'>
       and a.create_time &lt;= #{query.endTime}
     </if>
+    <if test='query.tenantId != null'>
+      and a.tenant_id = #{query.tenantId}
+    </if>
+    and a.delete_flag != '1'
   </select>
   <select id="detail" resultMap="BaseResultMap">
     select * from jsh_stock_check where id = #{id}

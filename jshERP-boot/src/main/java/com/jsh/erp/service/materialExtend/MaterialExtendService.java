@@ -147,6 +147,12 @@ public class MaterialExtendService {
                 if (StringUtils.isNotEmpty(tempInsertedJson.getString("lowDecimal"))) {
                     materialExtend.setLowDecimal(tempInsertedJson.getBigDecimal("lowDecimal"));
                 }
+                if (StringUtils.isNotEmpty(tempInsertedJson.getString("vin"))) {
+                    materialExtend.setVin(tempInsertedJson.getString("vin"));
+                }
+                if (StringUtils.isNotEmpty(tempInsertedJson.getString("carModelCode"))) {
+                    materialExtend.setCarModelCode(tempInsertedJson.getString("carModelCode"));
+                }
                 this.insertMaterialExtend(materialExtend);
             }
         }

@@ -544,35 +544,39 @@ public class ExceptionConstants {
     public static final int CHECK_PARAM_ERROR = 4104;
 
     public static final int MATERIAL_IS_NULL_CODE = 4105;
-    public static final String MATERIAL_IS_NULL_MSG = "商品信息为空！";
+    public static final String MATERIAL_IS_NULL_MSG = "盘点信息为空！";
 
     /**
-     * 配件信息 4300 ～ 4400
+     * 商品信息 4300 ～ 4400
      */
-    public static final int PART_PARAM_ERROR = 4301;
-    public static final int PART_ID_IS_NULL_CODE = 4302;
-    public static final String PART_ID_IS_NULL_MSG = "配件ID为空！";
+    public static final int PRODUCT_PARAM_ERROR = 4301;
+    public static final int PRODUCT_ID_IS_NULL_CODE = 4302;
+    public static final String PRODUCT_ID_IS_NULL_MSG = "商品ID为空！";
+    
 
-    public static final int PART_LIST_IS_NULL_CODE = 4303;
+    public static final int PRODUCT_QR_FAIL_CODE = 4308;
 
-    public static final String PART_LIST_IS_NULL_MSG = "配件数据列表为空！";
-
-
-    public static final int PART_ID_LIST_IS_NULL_CODE = 4304;
-    public static final String PART_ID_LIST_IS_NULL_MSG = "配件id列表不能为空！";
-
-    public static final int DOWNLOAD_PART_IS_NULL_CODE = 4305;
-    public static final String DOWNLOAD_PART_IS_NULL_MSG = "导出配件数据为空！";
-
-    public static final int DOWNLOAD_PART_FAIL_CODE = 4306;
-    public static final String DOWNLOAD_PART_FAIL_MSG = "配件信息下载失败！";
-
-    public static final int PART_STATUS_IS_NULL_CODE = 4307;
-    public static final String PART_STATUS_IS_NULL_MSG = "配件状态为空！";
+    public static final String PRODUCT_QR_FAIL_MSG = "商品二维码生成失败！";
 
 
-    public static final int PART_DETAIL_IS_NULL_CODE = 4308;
-    public static final String PART_DETAIL_IS_NULL_MSG = "配件不存在！";
+    public static final int PRODUCT_ID_LIST_IS_NULL_CODE = 4304;
+    public static final String PRODUCT_ID_LIST_IS_NULL_MSG = "商品id列表不能为空！";
+
+    public static final int DOWNLOAD_PRODUCT_IS_NULL_CODE = 4305;
+    public static final String DOWNLOAD_PRODUCT_IS_NULL_MSG = "导出商品数据为空！";
+
+    public static final int DOWNLOAD_PRODUCT_FAIL_CODE = 4306;
+    public static final String DOWNLOAD_PRODUCT_FAIL_MSG = "商品信息下载失败！";
+
+    public static final int PRODUCT_STATUS_IS_NULL_CODE = 4307;
+    public static final String PRODUCT_STATUS_IS_NULL_MSG = "商品状态为空！";
+
+    public static final int PRODUCT_CODE_IS_NULL_CODE = 4309;
+    public static final String PRODUCT_CODE_IS_NULL_MSG = "商品CODE为空！";
+
+    public static final int PRODUCT_IS_NULL_CODE = 4310;
+    public static final String PRODUCT_IS_NULL_MSG = "商品信息为空！";
+
 
 
     /**

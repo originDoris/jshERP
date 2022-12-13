@@ -3,18 +3,16 @@ package com.jsh.erp.datasource.entities;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * @author: origindoris
- * @Title: StockCheck
+ * @Title: Product
  * @Description:
- * @date: 2022/12/12 15:04
+ * @date: 2022/12/12 18:10
  */
 @Data
-public class StockCheck implements Serializable {
-
+public class Product implements Serializable {
     private Long id;
 
     private Long operator;
@@ -25,26 +23,38 @@ public class StockCheck implements Serializable {
 
     private String code;
 
-    private Long stockNumber;
-
-    private Long realStockNumber;
-
-    private BigDecimal price;
+    private Long tenantId;
 
     private String deleteFlag;
 
-    /**
-     * 差异金额
-     */
-    private BigDecimal difference;
+    private String productName;
+
+    private String color;
 
     private Long depotId;
 
+    private String location;
+
+    private String remark;
+
     private Long materialId;
+
+    private String carModelCode;
 
     private String depotName;
 
     private String materialName;
 
-    private Long tenantId;
+    private String oem;
+
+    private String vin;
+
+    private String carModel;
+
+    private String categoryName;
+
+    private String headCode;
+
+    private boolean qrFlag;
+
 }

@@ -17,5 +17,7 @@ public class BaseQuery implements Serializable {
 
     private Long pageNum = 1L;
 
+    private Long tenantId;
+
 
 }

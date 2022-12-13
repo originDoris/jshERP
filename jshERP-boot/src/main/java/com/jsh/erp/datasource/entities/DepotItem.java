@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class DepotItem {
@@ -61,6 +62,7 @@ public class DepotItem {
 
     private String anotherLocation;
 
+    private List<String> productCode;
     public Long getId() {
         return id;
     }

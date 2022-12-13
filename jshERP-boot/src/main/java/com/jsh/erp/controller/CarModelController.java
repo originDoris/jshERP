@@ -1,6 +1,7 @@
 package com.jsh.erp.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.google.common.collect.Lists;
 import com.jsh.erp.datasource.entities.CarModel;
 import com.jsh.erp.datasource.query.CarModelQuery;
 import com.jsh.erp.exception.BusinessParamCheckingException;
@@ -33,32 +34,19 @@ public class CarModelController {
     private CarModelService carModelService;
 
     @PostMapping("/save")
-    public BaseResponseInfo save(@RequestBody CarModel carModel) {
+    public BaseResponseInfo save(@RequestBody CarModel carModel) throws Exception {
         BaseResponseInfo baseResponseInfo = new BaseResponseInfo();
-        try {
-            boolean result = carModelService.save(carModel);
-            baseResponseInfo.setData(result);
-            baseResponseInfo.setCode(SERVICE_SUCCESS_CODE);
-            return baseResponseInfo;
-        } catch (Exception e) {
-            log.info("保存数据出错", e);
-            baseResponseInfo.setCode(SAVE_CAR_MODEL_FAIL_CODE);
-            baseResponseInfo.setData(false);
-            baseResponseInfo.setMsg(SAVE_CAR_MODEL_FAIL_MSG);
-            return baseResponseInfo;
-        }
+        boolean result = carModelService.save(carModel);
+        baseResponseInfo.setData(result);
+        baseResponseInfo.setCode(SERVICE_SUCCESS_CODE);
+        return baseResponseInfo;
     }
 
 
     @PostMapping("/modify")
-    public BaseResponseInfo modify(@RequestBody CarModel carModel) {
-        try {
-            boolean modify = carModelService.modify(carModel);
-            return new BaseResponseInfo(SERVICE_SUCCESS_CODE, modify, null);
-        } catch (Exception e) {
-            log.info("修改数据出错", e);
-            return new BaseResponseInfo(MODIFY_CAR_MODEL_FAIL_CODE, false, MODIFY_CAR_MODEL_FAIL_MSG);
-        }
+    public BaseResponseInfo modify(@RequestBody CarModel carModel) throws Exception {
+        boolean modify = carModelService.modify(carModel);
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, modify, null);
     }
 
     @GetMapping("/detail")

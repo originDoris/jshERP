@@ -18,6 +18,8 @@
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
     <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
     <result column="delete_Flag" jdbcType="VARCHAR" property="deleteFlag" />
+    <result column="vin" jdbcType="VARCHAR" property="vin" />
+    <result column="car_model_code" jdbcType="VARCHAR" property="carModelCode" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -80,7 +82,7 @@
   <sql id="Base_Column_List">
     id, material_id, bar_code, commodity_unit, sku, purchase_decimal, commodity_decimal, 
     wholesale_decimal, low_decimal, default_flag, create_time, create_serial, update_serial, 
-    update_time, tenant_id, delete_Flag
+    update_time, tenant_id, delete_Flag,vin,car_model_code
   </sql>
   <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.MaterialExtendExample" resultMap="BaseResultMap">
     select
@@ -118,13 +120,13 @@
       commodity_decimal, wholesale_decimal, low_decimal, 
       default_flag, create_time, create_serial, 
       update_serial, update_time, tenant_id, 
-      delete_Flag)
+      delete_Flag,vin,car_model_code)
     values (#{id,jdbcType=BIGINT}, #{materialId,jdbcType=BIGINT}, #{barCode,jdbcType=VARCHAR}, 
       #{commodityUnit,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{purchaseDecimal,jdbcType=DECIMAL}, 
       #{commodityDecimal,jdbcType=DECIMAL}, #{wholesaleDecimal,jdbcType=DECIMAL}, #{lowDecimal,jdbcType=DECIMAL}, 
       #{defaultFlag,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createSerial,jdbcType=VARCHAR}, 
       #{updateSerial,jdbcType=VARCHAR}, #{updateTime,jdbcType=BIGINT}, #{tenantId,jdbcType=BIGINT}, 
-      #{deleteFlag,jdbcType=VARCHAR})
+      #{deleteFlag,jdbcType=VARCHAR},#{vin},#{carModelCode})
   </insert>
   <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.MaterialExtend">
     insert into jsh_material_extend
@@ -177,6 +179,12 @@
       <if test="deleteFlag != null">
         delete_Flag,
       </if>
+      <if test='vin != null and vin != ""'>
+        vin,
+      </if>
+      <if test='carModelCode != null and carModelCode != ""'>
+        car_model_code,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -226,6 +234,12 @@
       </if>
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=VARCHAR},
+      </if>
+      <if test='vin != null and vin != ""'>
+        #{vin},
+      </if>
+      <if test='carModelCode != null and carModelCode != ""'>
+        #{carModelCode},
       </if>
     </trim>
   </insert>
@@ -293,6 +307,12 @@
       <if test="record.deleteFlag != null">
         delete_Flag = #{record.deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test='record.vin != null and record.vin != ""'>
+        vin = #{record.vin},
+      </if>
+      <if test='record.carModelCode != null and record.carModelCode != ""'>
+        car_model_code = #{record.carModelCode}
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -315,7 +335,9 @@
       update_serial = #{record.updateSerial,jdbcType=VARCHAR},
       update_time = #{record.updateTime,jdbcType=BIGINT},
       tenant_id = #{record.tenantId,jdbcType=BIGINT},
-      delete_Flag = #{record.deleteFlag,jdbcType=VARCHAR}
+      delete_Flag = #{record.deleteFlag,jdbcType=VARCHAR},
+      vin = #{record.vin},
+    car_model_code = #{record.carModelCode}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -368,6 +390,12 @@
       <if test="deleteFlag != null">
         delete_Flag = #{deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test='vin != null and vin != ""'>
+        vin = #{record.vin},
+      </if>
+      <if test='carModelCode != null and carModelCode != ""'>
+        car_model_code = #{carModelCode}
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -387,7 +415,9 @@
       update_serial = #{updateSerial,jdbcType=VARCHAR},
       update_time = #{updateTime,jdbcType=BIGINT},
       tenant_id = #{tenantId,jdbcType=BIGINT},
-      delete_Flag = #{deleteFlag,jdbcType=VARCHAR}
+      delete_Flag = #{deleteFlag,jdbcType=VARCHAR},
+        vin = #{record.vin},
+        car_model_code = #{carModelCode}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

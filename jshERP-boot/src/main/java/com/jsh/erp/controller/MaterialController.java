@@ -178,7 +178,7 @@ public class MaterialController {
     @ApiOperation(value = "查找商品信息")
     public JSONObject findBySelect(@RequestParam(value = "categoryId", required = false) Long categoryId,
                                   @RequestParam(value = "q", required = false) String q,
-                                  @RequestParam("mpList") String mpList,
+                                  @RequestParam(value = "mpList",required = false) String mpList,
                                   @RequestParam(value = "depotId", required = false) Long depotId,
                                   @RequestParam(value = "enableSerialNumber", required = false) String enableSerialNumber,
                                   @RequestParam(value = "enableBatchNumber", required = false) String enableBatchNumber,
@@ -189,7 +189,6 @@ public class MaterialController {
         try {
             List<MaterialVo4Unit> dataList = materialService.findBySelectWithBarCode(categoryId, q, enableSerialNumber,
                     enableBatchNumber, (currentPage-1)*pageSize, pageSize);
-            String[] mpArr = mpList.split(",");
             int total = materialService.findBySelectWithBarCodeCount(categoryId, q, enableSerialNumber,
                     enableBatchNumber);
             object.put("total", total);
@@ -241,7 +240,10 @@ public class MaterialController {
                         }
                     }
                     item.put("stock", stock);
-                    item.put("expand", materialService.getMaterialOtherByParam(mpArr, material));
+                    if (mpList != null && !mpList.isEmpty()) {
+                        String[] mpArr = mpList.split(",");
+                        item.put("expand", materialService.getMaterialOtherByParam(mpArr, material));
+                    }
                     item.put("imgName", material.getImgName());
                     dataArray.add(item);
                 }

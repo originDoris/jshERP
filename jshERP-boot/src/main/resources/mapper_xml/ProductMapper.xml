@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsh.erp.datasource.mappers.ProductMapper">
+  <resultMap id="BaseResultMap" type="com.jsh.erp.datasource.entities.Product">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="operator"  property="operator" />
+    <result column="product_name" property="productName" />
+    <result column="color" property="color" />
+    <result column="location" property="location" />
+    <result column="create_time" property="createTime" />
+    <result column="update_time" property="updateTime" />
+    <result column="code" property="code" />
+    <result column="depot_id" property="depotId" />
+    <result column="material_id" property="materialId" />
+    <result column="remark" property="remark" />
+    <result column="material_id" property="materialId" />
+    <result column="material_model_code" property="carModelCode" />
+    <result column="tenant_id" property="tenantId" />
+    <result column="delete_flag" property="deleteFlag" />
+    <result column="depotName" property="depotName"/>
+    <result column="oem" property="oem"/>
+    <result column="vin" property="vin"/>
+    <result column="car_model" property="carModel"/>
+    <result column="categoryName" property="categoryName"/>
+    <result column="head_code" property="headCode"/>
+    <result column="qr_flag" property="qrFlag"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id,operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag
+  </sql>
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.Product">
+    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag)
+        value(#{operator},#{productName},#{color},#{location},#{createTime},#{updateTime},#{code},#{depotId},#{materialId},#{remark},#{carModelCode},#{deleteFlag},#{headCode},#{qrFlag});
+  </insert>
+  <insert id="batchSave">
+    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag)
+      values
+        <foreach collection="list" open="" close="" item="product" separator=",">
+            (#{product.operator},#{product.productName},#{product.color},#{product.location},#{product.createTime},#{product.updateTime},#{product.code},#{product.depotId},#{product.materialId},#{product.remark},#{product.carModelCode},#{product.deleteFlag},#{product.headCode},#{product.qrFlag})
+        </foreach>
+  </insert>
+  <update id="modify" parameterType="com.jsh.erp.datasource.entities.Product">
+    update jsh_product
+    <set>
+      <if test='operator != null'>
+        operator = #{operator},
+      </if>
+      <if test='productName != null and productName != ""'>
+        product_name = #{productName},
+      </if>
+      <if test='color != null and color != ""'>
+        color = #{color},
+      </if>
+      <if test='location != null and location != ""'>
+        location = #{location},
+      </if>
+      <if test='createTime != null'>
+        create_time = #{createTime},
+      </if>
+      <if test='updateTime != null'>
+        update_time = #{updateTime},
+      </if>
+      <if test='code != null and code != ""'>
+        code = #{code},
+      </if>
+      <if test='depotId != null and depotId != ""'>
+        depot_id = #{depotId},
+      </if>
+      <if test='materialId != null and materialId != ""'>
+        material_id = #{materialId},
+      </if>
+      <if test='remark != null and remark != ""'>
+        remark = #{remark},
+      </if>
+      <if test='carModelCode != null and carModelCode != ""'>
+        car_model_code = #{carModelCode},
+      </if>
+      <if test='deleteFlag != null and deleteFlag != ""'>
+        delete_flag = #{deleteFlag},
+      </if>
+      <if test='headCode != null and headCode != ""'>
+        head_code = #{headCode},
+      </if>
+      <if test='qrFlag != null'>
+        qr_flag = #{qrFlag}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <update id="modifyHeadCode">
+    update jsh_product set head_code = #{headCode} where code in
+                                                <foreach collection="codes" open="(" close=")" separator="," item="code">
+                                                  #{code}
+                                                </foreach>
+  </update>
+  <delete id="delete">
+    delete from jsh_product where id = #{id≈}
+  </delete>
+  <delete id="batchDelete">
+    delete  from jsh_product where id in
+                               <foreach collection="ids" open="(" close=")" item="id" separator=",">
+                                 #{id}
+                               </foreach>
+  </delete>
+  <select id="queryList" resultMap="BaseResultMap">
+    SELECT
+    a.*,
+    b.NAME as depotName,
+    c.NAME as materialName,
+    f.bar_code as oem,
+    f.vin,
+    d.car_model,
+    e.name as categoryName
+    FROM
+    jsh_product a
+    LEFT JOIN jsh_depot b ON a.depot_id = b.id
+    LEFT JOIN jsh_material c ON a.material_id = c.id
+    LEFT JOIN jsh_material_extend f on a.material_id =f.material_id
+    LEFT JOIN jsh_car_model d on a.car_model_code = d.`code`
+    LEFT JOIN jsh_material_category e on c.category_id = e.id
+    where 1=1
+    <if test='query.code != null and query.code != ""'>
+      and a.code = #{query.code}
+    </if>
+    <if test='query.materialName != null and query.materialName != ""'>
+      and b.name like concat('%',#{query.materialName},'%')
+    </if>
+    <if test='query.categoryName != null and query.categoryName != ""'>
+      and e.name like concat('%',#{query.categoryName},'%')
+    </if>
+    <if test='query.depotId != null'>
+      and b.id = #{query.depotId}
+    </if>
+    <if test='query.operator != null and query.operator != ""'>
+      and a.operator = #{query.operator}
+    </if>
+    <if test='query.tenantId != null'>
+      and a.tenant_id = #{query.tenantId}
+    </if>
+    <if test="query.qrFlag != null">
+      and a.qr_flag = #{query.qrFlag}
+    </if>
+    and a.delete_flag != '1'
+  </select>
+  <select id="detail" resultMap="BaseResultMap">
+    select * from jsh_product where id = #{id}
+  </select>
+  <select id="queryByIds" resultMap="BaseResultMap">
+    select * from jsh_product
+    where id in
+    <foreach collection="ids" separator="," item="id" close=")" open="(">
+      #{id}
+    </foreach>
+  </select>
+  <select id="detailByCode" resultMap="BaseResultMap">
+    select * from jsh_product where code = #{code} and delete_flag != '1'
+  </select>
+  <select id="queryQrCodeIsNotNull" resultMap="BaseResultMap">
+    SELECT
+    a.*,
+    b.NAME as depotName,
+    c.NAME as materialName,
+    f.bar_code as oem,
+    f.vin,
+    d.car_model,
+    e.name as categoryName
+    FROM
+    jsh_product a
+    LEFT JOIN jsh_depot b ON a.depot_id = b.id
+    LEFT JOIN jsh_material c ON a.material_id = c.id
+    LEFT JOIN jsh_material_extend f on a.material_id =f.material_id
+    LEFT JOIN jsh_car_model d on a.car_model_code = d.`code`
+    LEFT JOIN jsh_material_category e on c.category_id = e.id
+    where 1=1
+    <if test='query.code != null and query.code != ""'>
+      and a.code = #{query.code}
+    </if>
+    <if test='query.materialName != null and query.materialName != ""'>
+      and b.name like concat('%',#{query.materialName},'%')
+    </if>
+    <if test='query.categoryName != null and query.categoryName != ""'>
+      and e.name like concat('%',#{query.categoryName},'%')
+    </if>
+    <if test='query.depotId != null'>
+      and b.id = #{query.depotId}
+    </if>
+    <if test='query.operator != null and query.operator != ""'>
+      and a.operator = #{query.operator}
+    </if>
+    <if test='query.tenantId != null'>
+      and a.tenant_id = #{query.tenantId}
+    </if>
+    and a.qr_flag = true
+    and a.delete_flag != '1'
+  </select>
+
+</mapper>

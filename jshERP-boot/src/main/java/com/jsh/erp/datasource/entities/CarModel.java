@@ -62,6 +62,10 @@ public class CarModel implements Serializable {
 
     private String code;
 
+    private Long tenantId;
+
+    private String deleteFlag;
+
 
 
 

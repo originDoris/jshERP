@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsh.erp.datasource.entities.Material;
 import com.jsh.erp.datasource.entities.StockCheck;
 import com.jsh.erp.datasource.entities.StockCheck;
+import com.jsh.erp.datasource.entities.User;
 import com.jsh.erp.datasource.mappers.CarModelMapper;
 import com.jsh.erp.datasource.mappers.MaterialMapper;
 import com.jsh.erp.datasource.mappers.MaterialMapperEx;
@@ -83,8 +84,11 @@ public class StockCheckService {
     public boolean save(StockCheck stockCheck) throws Exception {
         verifyParam(stockCheck);
         Long userId = userService.getUserId(request);
+        User user = userService.getUser(userId);
+        stockCheck.setTenantId(user.getTenantId());
         stockCheck.setOperator(userId);
         stockCheck.setCreateTime(new Date());
+        stockCheck.setDeleteFlag("0");
         inventory(stockCheck);
         if (StringUtils.isBlank(stockCheck.getCode())) {
             String code = sequenceService.buildOnlyNumber(CODE_PREFIX);
@@ -114,15 +118,18 @@ public class StockCheckService {
         if (carModels == null || carModels.isEmpty()) {
             throw new BusinessParamCheckingException(CHECK_ID_LIST_IS_NULL_CODE, CHECK_ID_LIST_IS_NULL_MSG);
         }
+        Long userId = userService.getUserId(request);
+        User user = userService.getUser(userId);
         for (StockCheck stockCheck : carModels) {
             verifyParam(stockCheck);
-            Long userId = userService.getUserId(request);
+            stockCheck.setTenantId(user.getTenantId());
             stockCheck.setOperator(userId);
             stockCheck.setCreateTime(new Date());
             if (StringUtils.isBlank(stockCheck.getCode())) {
                 String code = sequenceService.buildOnlyNumber(CODE_PREFIX);
                 stockCheck.setCode(code);
             }
+            stockCheck.setDeleteFlag("0");
             inventory(stockCheck);
         }
         return stockCheckMapper.batchSave(carModels);
@@ -151,6 +158,8 @@ public class StockCheckService {
         }
         inventory(stockCheck);
         Long userId = userService.getUserId(request);
+        User user = userService.getUser(userId);
+        stockCheck.setTenantId(user.getTenantId());
         stockCheck.setOperator(userId);
         stockCheck.setUpdateTime(new Date());
         return stockCheckMapper.modify(stockCheck);

@@ -55,6 +55,10 @@ public class MaterialVo4Unit extends Material{
      */
     private String location;
 
+    private String vin;
+
+    private String carModelCode;
+
     public String getUnitName() {
         return unitName;
     }

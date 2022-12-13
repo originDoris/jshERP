@@ -1,5 +1,6 @@
 package com.jsh.erp.service.depotItem;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.constants.BusinessConstants;
@@ -15,6 +16,7 @@ import com.jsh.erp.service.depotHead.DepotHeadService;
 import com.jsh.erp.service.materialExtend.MaterialExtendService;
 import com.jsh.erp.service.log.LogService;
 import com.jsh.erp.service.material.MaterialService;
+import com.jsh.erp.service.product.ProductService;
 import com.jsh.erp.service.role.RoleService;
 import com.jsh.erp.service.serialNumber.SerialNumberService;
 import com.jsh.erp.service.systemConfig.SystemConfigService;
@@ -69,6 +71,8 @@ public class DepotItemService {
     @Resource
     private LogService logService;
 
+    @Resource
+    private ProductService productService;
     public DepotItem getDepotItem(long id)throws Exception {
         DepotItem result=null;
         try{
@@ -586,6 +590,10 @@ public class DepotItemService {
                 if (StringUtil.isExist(rowObj.get("remark"))) {
                     depotItem.setRemark(rowObj.getString("remark"));
                 }
+                if (StringUtil.isExist(rowObj.get("productCode"))) {
+                    depotItem.setProductCode(JSON.parseArray(rowObj.getJSONArray("productCode").toJSONString(), String.class));
+                }
+
                 //出库时判断库存是否充足
                 if(BusinessConstants.DEPOTHEAD_TYPE_OUT.equals(depotHead.getType())){
                     BigDecimal stock = getStockByParam(depotItem.getDepotId(),depotItem.getMaterialId(),null,null);
@@ -613,6 +621,8 @@ public class DepotItemService {
                 updateCurrentStock(depotItem);
                 //更新商品的价格
                 updateMaterialExtendPrice(materialExtend.getId(), depotHead.getSubType(), rowObj);
+                //更新商品单据号
+                productService.modifyHeadCode(depotItem.getProductCode(), depotHead.getNumber());
             }
             //如果关联单据号非空则更新订单的状态,单据类型：采购入库单或销售出库单或盘点复盘单
             if(BusinessConstants.SUB_TYPE_PURCHASE.equals(depotHead.getSubType())

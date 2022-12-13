@@ -48,12 +48,6 @@ public class Material {
 
     private String deleteFlag;
 
-    private String oem;
-
-    private String vin;
-
-    private String carModelCode;
-
     public Long getId() {
         return id;
     }

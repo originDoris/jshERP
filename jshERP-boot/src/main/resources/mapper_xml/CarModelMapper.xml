@@ -16,20 +16,22 @@
     <result column="create_time" property="createTime" />
     <result column="update_time" property="updateTime" />
     <result column="code" property="code" />
+    <result column="tenant_id" property="tenantId" />
+    <result column="delete_flag" property="deleteFlag" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id,car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code
+    id,car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code,delete_flag
   </sql>
   <insert id="save" parameterType="com.jsh.erp.datasource.entities.CarModel">
-    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code)
-        value(#{carVin},#{carModel},#{carSeries},#{carEngine},#{carBrand},#{carGroup},#{carGearbox},#{carCc},#{creator},#{modifier},#{createTime},#{updateTime},#{code});
+    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code,delete_flag)
+        value(#{carVin},#{carModel},#{carSeries},#{carEngine},#{carBrand},#{carGroup},#{carGearbox},#{carCc},#{creator},#{modifier},#{createTime},#{updateTime},#{code},#{deleteFlag});
   </insert>
   <insert id="batchSave">
-    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code)
+    insert into jsh_car_model (car_vin,car_model,car_series,car_engine,car_brand,car_group,car_gearbox,car_cc,creator,modifier,create_time,update_time,code,delete_flag)
       values
         <foreach collection="list" open="" close="" item="carModel" separator=",">
-            (#{carModel.carVin},#{carModel.carModel},#{carModel.carSeries},#{carModel.carEngine},#{carModel.carBrand},#{carModel.carGroup},#{carModel.carGearbox},#{carModel.carCc},#{carModel.creator},#{carModel.modifier},#{carModel.createTime},#{carModel.updateTime},#{carModel.code})
+            (#{carModel.carVin},#{carModel.carModel},#{carModel.carSeries},#{carModel.carEngine},#{carModel.carBrand},#{carModel.carGroup},#{carModel.carGearbox},#{carModel.carCc},#{carModel.creator},#{carModel.modifier},#{carModel.createTime},#{carModel.updateTime},#{carModel.code},#{carModel.deleteFlag})
         </foreach>
   </insert>
   <update id="modify" parameterType="com.jsh.erp.datasource.entities.CarModel">
@@ -59,20 +61,23 @@
       <if test='carCc != null and carCc != ""'>
         car_cc = #{carCc},
       </if>
-      <if test='creator != null and creator != ""'>
+      <if test='creator != null'>
         creator = #{creator},
       </if>
-      <if test='modifier != null and modifier != ""'>
+      <if test='modifier != null'>
         modifier = #{modifier},
       </if>
-      <if test='createTime != null and createTime != ""'>
+      <if test='createTime != null'>
         create_time = #{createTime},
       </if>
-      <if test='updateTime != null and updateTime != ""'>
+      <if test='updateTime != null'>
         update_time = #{updateTime},
       </if>
       <if test='code != null and code != ""'>
-        code = #{code}
+        code = #{code},
+      </if>
+      <if test='deleteFlag != null and deleteFlag != ""'>
+        delete_flag = #{deleteFlag}
       </if>
     </set>
     where id = #{id}
@@ -117,6 +122,10 @@
     <if test='carModelQuery.code != null and carModelQuery.code != ""'>
       and code = #{carModelQuery.code}
     </if>
+    <if test='carModelQuery.tenantId != null'>
+      and tenant_id = #{carModelQuery.tenantId}
+    </if>
+    and delete_flag != '1'
     order by update_time desc
   </select>
   <select id="detail" resultMap="BaseResultMap">

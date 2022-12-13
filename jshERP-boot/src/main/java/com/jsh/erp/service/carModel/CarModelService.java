@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsh.erp.datasource.entities.CarModel;
+import com.jsh.erp.datasource.entities.User;
 import com.jsh.erp.datasource.mappers.CarModelMapper;
 import com.jsh.erp.datasource.query.CarModelQuery;
 import com.jsh.erp.exception.BusinessParamCheckingException;
@@ -76,8 +77,11 @@ public class CarModelService {
     public boolean save(CarModel carModel) throws Exception {
         verifyParam(carModel);
         Long userId = userService.getUserId(request);
+        User user = userService.getUser(userId);
+        carModel.setTenantId(user.getTenantId());
         carModel.setCreator(userId);
         carModel.setCreateTime(new Date());
+        carModel.setDeleteFlag("0");
         if (StringUtils.isBlank(carModel.getCode())) {
             String code = sequenceService.buildOnlyNumber(CODE_PREFIX);
             carModel.setCode(code);
@@ -90,9 +94,11 @@ public class CarModelService {
         if (carModels == null || carModels.isEmpty()) {
             throw new BusinessParamCheckingException(CAR_MODEL_LIST_IS_NULL_CODE, CAR_MODEL_LIST_IS_NULL_MSG);
         }
+        Long userId = userService.getUserId(request);
+        User user = userService.getUser(userId);
         for (CarModel carModel : carModels) {
             verifyParam(carModel);
-            Long userId = userService.getUserId(request);
+            carModel.setTenantId(user.getTenantId());
             carModel.setCreator(userId);
             carModel.setCreateTime(new Date());
             if (StringUtils.isBlank(carModel.getCode())) {
@@ -125,6 +131,8 @@ public class CarModelService {
             throw new BusinessParamCheckingException(CAR_MODEL_ID_IS_NULL_CODE, CAR_MODEL_ID_IS_NULL_MSG);
         }
         Long userId = userService.getUserId(request);
+        User user = userService.getUser(userId);
+        carModel.setTenantId(user.getTenantId());
         carModel.setModifier(userId);
         carModel.setUpdateTime(new Date());
         return carModelMapper.modify(carModel);
