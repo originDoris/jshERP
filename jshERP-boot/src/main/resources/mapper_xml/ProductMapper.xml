@@ -24,20 +24,21 @@
     <result column="categoryName" property="categoryName"/>
     <result column="head_code" property="headCode"/>
     <result column="qr_flag" property="qrFlag"/>
+    <result column="images" property="images" typeHandler="com.jsh.erp.handler.StringArrayHandler"/>
   </resultMap>
 
   <sql id="Base_Column_List">
-    id,operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag
+    id,operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag,images
   </sql>
   <insert id="save" parameterType="com.jsh.erp.datasource.entities.Product">
-    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag)
-        value(#{operator},#{productName},#{color},#{location},#{createTime},#{updateTime},#{code},#{depotId},#{materialId},#{remark},#{carModelCode},#{deleteFlag},#{headCode},#{qrFlag});
+    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag,images)
+        value(#{operator},#{productName},#{color},#{location},#{createTime},#{updateTime},#{code},#{depotId},#{materialId},#{remark},#{carModelCode},#{deleteFlag},#{headCode},#{qrFlag},#{images,typeHandler=com.jsh.erp.handler.StringArrayHandler});
   </insert>
   <insert id="batchSave">
-    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag)
+    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag,images)
       values
         <foreach collection="list" open="" close="" item="product" separator=",">
-            (#{product.operator},#{product.productName},#{product.color},#{product.location},#{product.createTime},#{product.updateTime},#{product.code},#{product.depotId},#{product.materialId},#{product.remark},#{product.carModelCode},#{product.deleteFlag},#{product.headCode},#{product.qrFlag})
+            (#{product.operator},#{product.productName},#{product.color},#{product.location},#{product.createTime},#{product.updateTime},#{product.code},#{product.depotId},#{product.materialId},#{product.remark},#{product.carModelCode},#{product.deleteFlag},#{product.headCode},#{product.qrFlag},#{product.images,typeHandler=com.jsh.erp.handler.StringArrayHandler})
         </foreach>
   </insert>
   <update id="modify" parameterType="com.jsh.erp.datasource.entities.Product">
@@ -83,7 +84,10 @@
         head_code = #{headCode},
       </if>
       <if test='qrFlag != null'>
-        qr_flag = #{qrFlag}
+        qr_flag = #{qrFlag},
+      </if>
+      <if test='images != null and images != ""'>
+        images = #{images,typeHandler=com.jsh.erp.handler.StringArrayHandler}
       </if>
     </set>
     where id = #{id}
@@ -102,6 +106,12 @@
                                <foreach collection="ids" open="(" close=")" item="id" separator=",">
                                  #{id}
                                </foreach>
+  </delete>
+  <delete id="batchDeleteByCode">
+    delete  from jsh_product where code in
+    <foreach collection="codes" open="(" close=")" item="code" separator=",">
+      #{code}
+    </foreach>
   </delete>
   <select id="queryList" resultMap="BaseResultMap">
     SELECT
@@ -124,19 +134,26 @@
       and a.code = #{query.code}
     </if>
     <if test='query.materialName != null and query.materialName != ""'>
-      and b.name like concat('%',#{query.materialName},'%')
+      and (c.name like concat('%',#{query.materialName},'%')
+      or a.product_name like concat('%',#{query.materialName},'%'))
     </if>
     <if test='query.categoryName != null and query.categoryName != ""'>
       and e.name like concat('%',#{query.categoryName},'%')
     </if>
+    <if test='query.carModel != null and query.carModel != ""'>
+      and d.name = #{query.carModel}
+    </if>
     <if test='query.depotId != null'>
       and b.id = #{query.depotId}
     </if>
+    <if test='query.oem != null and query.oem != ""'>
+      and a.oem = #{query.oem}
+    </if>
+    <if test='query.vin != null and query.vin != ""'>
+      and a.vin = #{query.vin}
+    </if>
     <if test='query.operator != null and query.operator != ""'>
       and a.operator = #{query.operator}
-    </if>
-    <if test='query.tenantId != null'>
-      and a.tenant_id = #{query.tenantId}
     </if>
     <if test="query.qrFlag != null">
       and a.qr_flag = #{query.qrFlag}
@@ -145,16 +162,6 @@
   </select>
   <select id="detail" resultMap="BaseResultMap">
     select * from jsh_product where id = #{id}
-  </select>
-  <select id="queryByIds" resultMap="BaseResultMap">
-    select * from jsh_product
-    where id in
-    <foreach collection="ids" separator="," item="id" close=")" open="(">
-      #{id}
-    </foreach>
-  </select>
-  <select id="detailByCode" resultMap="BaseResultMap">
-    select * from jsh_product where code = #{code} and delete_flag != '1'
   </select>
   <select id="queryQrCodeIsNotNull" resultMap="BaseResultMap">
     SELECT
@@ -188,11 +195,25 @@
     <if test='query.operator != null and query.operator != ""'>
       and a.operator = #{query.operator}
     </if>
-    <if test='query.tenantId != null'>
-      and a.tenant_id = #{query.tenantId}
+    and a.qr_flag = true;
+    <if test='returnFlag != null and returnFlag == true'>
+      and a.head_code is not null
     </if>
-    and a.qr_flag = true
+    <if test='returnFlag != null and returnFlag == false'>
+      and a.head_code is null
+    </if>
     and a.delete_flag != '1'
+
+  </select>
+  <select id="queryByIds" resultMap="BaseResultMap">
+    select * from jsh_product
+    where id in
+    <foreach collection="ids" separator="," item="id" close=")" open="(">
+      #{id}
+    </foreach>
+  </select>
+  <select id="detailByCode" resultMap="BaseResultMap">
+    select * from jsh_product where code = #{code} and delete_flag != '1'
   </select>
 
 </mapper>

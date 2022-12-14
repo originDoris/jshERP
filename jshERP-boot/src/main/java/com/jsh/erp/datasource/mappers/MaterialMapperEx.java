@@ -65,6 +65,10 @@ public interface MaterialMapperEx {
                                                   @Param("offset") Integer offset,
                                                   @Param("rows") Integer rows);
 
+
+    List<MaterialLocationInfo> queryLocation(@Param("depotId") Long depotId,
+                                             @Param("barCode") String barCode);
+
     int findBySelectWithBarCodeCount(@Param("idList") List<Long> idList,
                                      @Param("q") String q,
                                      @Param("enableSerialNumber") String enableSerialNumber,

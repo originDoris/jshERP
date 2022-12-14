@@ -24,11 +24,13 @@ public interface ProductMapper {
 
     boolean batchDelete(@Param("ids") List<Long> ids);
 
+    boolean batchDeleteByCode(@Param("codes") List<String> code);
+
     boolean modify(Product product);
 
     boolean save(Product product);
 
-    List<Product> queryQrCodeIsNotNull(@Param("query") ProductQuery query);
+    List<Product> queryQrCodeIsNotNull(@Param("query") ProductQuery query,@Param("returnFlag") Boolean returnFlag);
     boolean modifyHeadCode(@Param("codes") List<String> codes, @Param("headCode") String headCode);
 
     boolean batchSave(@Param("list") List<Product> products);

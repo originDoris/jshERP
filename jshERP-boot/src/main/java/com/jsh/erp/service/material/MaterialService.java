@@ -393,6 +393,11 @@ public class MaterialService {
         return idList;
     }
 
+
+    public List<MaterialLocationInfo> getLocation(Long depotId, String barCode) {
+        return materialMapperEx.queryLocation(depotId, barCode);
+    }
+
     public List<MaterialVo4Unit> findBySelectWithBarCode(Long categoryId, String q, String enableSerialNumber,
                                                          String enableBatchNumber, Integer offset, Integer rows) throws Exception {
         List<MaterialVo4Unit> list = null;

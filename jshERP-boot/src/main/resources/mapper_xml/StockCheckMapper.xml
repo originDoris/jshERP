@@ -73,7 +73,7 @@
     where id = #{id}
   </update>
   <delete id="delete">
-    delete from jsh_stock_check where id = #{id≈}
+    delete from jsh_stock_check where id = #{id}
   </delete>
   <delete id="batchDelete">
     delete  from jsh_stock_check where id in
@@ -90,15 +90,16 @@
     jsh_stock_check a
     LEFT JOIN jsh_depot b ON a.depot_id = b.id
     LEFT JOIN jsh_material c ON a.material_id = c.id
+    LEFT JOIN jsh_user d on a.operator = d.id
     where 1=1
     <if test='query.code != null and query.code != ""'>
       and a.code = #{query.code}
     </if>
     <if test='query.materialName != null and query.materialName != ""'>
-      and b.name like concat('%',#{query.materialName},'%')
+      and c.name like concat('%',#{query.materialName},'%')
     </if>
     <if test='query.operator != null and query.operator != ""'>
-      and a.operator = #{query.operator}
+      and d.user_name like  concat('%',#{query.operator},'%')
     </if>
     <if test='query.startTime != null and query.startTime != ""'>
       and a.create_time >= #{query.startTime}
@@ -112,7 +113,15 @@
     and a.delete_flag != '1'
   </select>
   <select id="detail" resultMap="BaseResultMap">
-    select * from jsh_stock_check where id = #{id}
+    SELECT
+      a.*,
+      b.NAME as depotName,
+      c.NAME as materialName
+    FROM
+      jsh_stock_check a
+        LEFT JOIN jsh_depot b ON a.depot_id = b.id
+        LEFT JOIN jsh_material c ON a.material_id = c.id
+        LEFT JOIN jsh_user d on a.operator = d.id where a.id = #{id}
   </select>
   <select id="queryByIds" resultMap="BaseResultMap">
     select * from jsh_stock_check

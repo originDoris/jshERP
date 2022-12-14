@@ -29,7 +29,7 @@
     <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag" />
     <result column="current_location" property="currentLocation" />
     <result column="another_location" property="anotherLocation" />
-    <result column="product_code" property="productCode" typeHandler="com.jsh.erp.handler.ProductHandler"/>
+    <result column="product_code" property="productCode" typeHandler="com.jsh.erp.handler.StringArrayHandler"/>
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -143,7 +143,7 @@
       #{taxRate,jdbcType=DECIMAL}, #{taxMoney,jdbcType=DECIMAL}, #{taxLastMoney,jdbcType=DECIMAL}, 
       #{materialType,jdbcType=VARCHAR}, #{snList,jdbcType=VARCHAR}, #{batchNumber,jdbcType=VARCHAR}, 
       #{expirationDate,jdbcType=TIMESTAMP}, #{linkId,jdbcType=BIGINT}, #{tenantId,jdbcType=BIGINT}, 
-      #{deleteFlag,jdbcType=VARCHAR},#{currentLocation},#{anotherLocation},#{productCode,typeHandler=com.jsh.erp.handler.ProductHandler})
+      #{deleteFlag,jdbcType=VARCHAR},#{currentLocation},#{anotherLocation},#{productCode,typeHandler=com.jsh.erp.handler.StringArrayHandler})
   </insert>
   <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.DepotItem">
     insert into jsh_depot_item
@@ -316,7 +316,7 @@
         #{anotherLocation},
       </if>
       <if test='productCode != null'>
-        #{productCode,typeHandler=com.jsh.erp.handler.ProductHandler}
+        #{productCode,typeHandler=com.jsh.erp.handler.StringArrayHandler}
       </if>
     </trim>
   </insert>
@@ -411,7 +411,7 @@
         another_location = #{record.anotherLocation},
       </if>
       <if test='record.productCode != null'>
-        product_code = #{record.productCode,typeHandler=com.jsh.erp.handler.ProductHandler}
+        product_code = #{record.productCode,typeHandler=com.jsh.erp.handler.StringArrayHandler}
       </if>
     </set>
     <if test="_parameter != null">
@@ -447,7 +447,7 @@
       delete_flag = #{record.deleteFlag,jdbcType=VARCHAR},
       current_location = #{record.currentLocation},
       another_location = #{record.anotherLocation},
-      product_code = #{record.productCode,typeHandler=com.jsh.erp.handler.ProductHandler}
+      product_code = #{record.productCode,typeHandler=com.jsh.erp.handler.StringArrayHandler}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -534,7 +534,7 @@
         another_location = #{anotherLocation},
       </if>
       <if test='productCode != null and productCode != ""'>
-        product_code = #{record.productCode,typeHandler=com.jsh.erp.handler.ProductHandler}
+        product_code = #{record.productCode,typeHandler=com.jsh.erp.handler.StringArrayHandler}
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -567,7 +567,7 @@
       delete_flag = #{deleteFlag,jdbcType=VARCHAR},
         current_location = #{record.currentLocation},
         another_location = #{record.anotherLocation},
-        product_code = #{record.productCode,typeHandler=com.jsh.erp.handler.ProductHandler}
+        product_code = #{record.productCode,typeHandler=com.jsh.erp.handler.StringArrayHandler}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

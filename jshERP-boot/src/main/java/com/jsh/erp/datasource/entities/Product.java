@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: origindoris
@@ -56,5 +57,7 @@ public class Product implements Serializable {
     private String headCode;
 
     private boolean qrFlag;
+
+    private List<String> images;
 
 }

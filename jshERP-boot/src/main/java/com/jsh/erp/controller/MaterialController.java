@@ -3,6 +3,7 @@ package com.jsh.erp.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jsh.erp.datasource.entities.MaterialInitialStockWithMaterial;
+import com.jsh.erp.datasource.entities.MaterialLocationInfo;
 import com.jsh.erp.datasource.entities.MaterialVo4Unit;
 import com.jsh.erp.datasource.entities.Unit;
 import com.jsh.erp.service.depot.DepotService;
@@ -13,6 +14,7 @@ import com.jsh.erp.service.unit.UnitService;
 import com.jsh.erp.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.jsh.erp.constants.ExceptionConstants.SERVICE_SUCCESS_CODE;
 import static com.jsh.erp.utils.ResponseJsonUtil.returnJson;
 
 /**
@@ -167,6 +170,15 @@ public class MaterialController {
         }
         return res;
     }
+
+
+    @GetMapping("/getLocation")
+    public BaseResponseInfo getLocation(@RequestParam("barCode") String barCode,
+                                        @RequestParam("depotId") Long depotId) {
+        List<MaterialLocationInfo> location = materialService.getLocation(depotId, barCode);
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, location);
+    }
+
 
     /**
      * 查找商品信息-下拉框

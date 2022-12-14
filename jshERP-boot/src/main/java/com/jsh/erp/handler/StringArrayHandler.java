@@ -14,13 +14,13 @@ import java.util.List;
 
 /**
  * @author: origindoris
- * @Title: ProductHandler
+ * @Title: StringArrayHandler
  * @Description:
  * @date: 2022/12/13 10:58
  */
 @MappedTypes(value = List.class)
 @MappedJdbcTypes(value = {JdbcType.VARCHAR}, includeNullJdbcType = true)
-public class ProductHandler extends BaseTypeHandler<List<String>> {
+public class StringArrayHandler extends BaseTypeHandler<List<String>> {
     @Override
     public void setNonNullParameter(PreparedStatement preparedStatement, int i, List<String> strings, JdbcType jdbcType) throws SQLException {
         preparedStatement.setString(i, JSON.toJSONString(strings));

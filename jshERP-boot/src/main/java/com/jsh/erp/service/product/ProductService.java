@@ -133,6 +133,14 @@ public class ProductService {
         return productMapper.batchDelete(ids);
     }
 
+    public boolean batchRemoveByCode(List<String> codes) throws BusinessParamCheckingException {
+        if (codes == null || codes.isEmpty()) {
+            return false;
+        }
+        return productMapper.batchDeleteByCode(codes);
+    }
+
+
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public boolean modify(Product product) throws Exception {
         verifyParam(product);
@@ -165,8 +173,8 @@ public class ProductService {
     }
 
 
-    public List<Product> getQrCodeIsNotNull(ProductQuery productQuery){
-        return productMapper.queryQrCodeIsNotNull(productQuery);
+    public List<Product> getQrCodeIsNotNull(ProductQuery productQuery,Boolean returnFlag){
+        return productMapper.queryQrCodeIsNotNull(productQuery, returnFlag);
     }
 
     /**

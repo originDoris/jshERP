@@ -620,9 +620,14 @@ public class DepotItemService {
                 //更新当前库存
                 updateCurrentStock(depotItem);
                 //更新商品的价格
+                // todo 退货删除商品
                 updateMaterialExtendPrice(materialExtend.getId(), depotHead.getSubType(), rowObj);
-                //更新商品单据号
-                productService.modifyHeadCode(depotItem.getProductCode(), depotHead.getNumber());
+                if ("采购退货".equals(depotHead.getSubType())) {
+                    productService.batchRemoveByCode(depotItem.getProductCode());
+                }else{
+                    //更新商品单据号
+                    productService.modifyHeadCode(depotItem.getProductCode(), depotHead.getNumber());
+                }
             }
             //如果关联单据号非空则更新订单的状态,单据类型：采购入库单或销售出库单或盘点复盘单
             if(BusinessConstants.SUB_TYPE_PURCHASE.equals(depotHead.getSubType())
@@ -662,6 +667,9 @@ public class DepotItemService {
         //将分批操作后的单据的商品和商品数据构造成Map
         Map<Long, BigDecimal> materialSumMap = new HashMap<>();
         for(DepotItemVo4MaterialAndSum materialAndSum : batchList) {
+            if (materialAndSum == null) {
+                continue;
+            }
             materialSumMap.put(materialAndSum.getMaterialExtendId(), materialAndSum.getOperNumber());
         }
         for(DepotItemVo4MaterialAndSum materialAndSum : linkList) {
@@ -946,7 +954,7 @@ public class DepotItemService {
      */
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public void updateCurrentStock(DepotItem depotItem){
-        updateCurrentStockFun(depotItem.getMaterialId(), depotItem.getDepotId());
+        updateCurrentStockFun(depotItem.getMaterialId(), depotItem.getDepotId(), depotItem.getCurrentLocation());
         if(depotItem.getAnotherDepotId()!=null){
             updateCurrentStockFun(depotItem.getMaterialId(), depotItem.getAnotherDepotId(), depotItem.getAnotherLocation());
         }
@@ -968,10 +976,11 @@ public class DepotItemService {
             criteria.andMaterialIdEqualTo(mId).andDepotIdEqualTo(dId)
                     .andDeleteFlagNotEqualTo(BusinessConstants.DELETE_FLAG_DELETED);
             MaterialCurrentStock materialCurrentStock = new MaterialCurrentStock();
-            if (StringUtils.isNotBlank(location)) {
-                criteria.andLocationEqualTo(location);
-                materialCurrentStock.setLocation(location);
+            if (StringUtils.isBlank(location)) {
+                location = "默认货位";
             }
+            criteria.andLocationEqualTo(location);
+            materialCurrentStock.setLocation(location);
             List<MaterialCurrentStock> list = materialCurrentStockMapper.selectByExample(example);
             materialCurrentStock.setMaterialId(mId);
             materialCurrentStock.setDepotId(dId);
