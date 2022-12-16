@@ -156,11 +156,16 @@ public class ProductService {
     }
 
 
-    public boolean modifyHeadCode(List<String> codes, String headCode) {
+    public boolean modifyHeadCode(List<String> codes, String headCode,String status) {
         if (codes == null || codes.isEmpty()) {
             return false;
         }
-        return productMapper.modifyHeadCode(codes, headCode);
+        if ("2".equals(status)) {
+            return productMapper.modifyInHeadCode(codes, headCode);
+        }else{
+            return productMapper.modifyOutHeadCode(codes, headCode);
+        }
+
     }
 
     private void verifyParam(Product product) throws BusinessParamCheckingException {
@@ -173,8 +178,8 @@ public class ProductService {
     }
 
 
-    public List<Product> getQrCodeIsNotNull(ProductQuery productQuery,Boolean returnFlag){
-        return productMapper.queryQrCodeIsNotNull(productQuery, returnFlag);
+    public List<Product> queryByStatus(ProductQuery productQuery){
+        return productMapper.queryByStatus(productQuery);
     }
 
     /**

@@ -30,4 +30,11 @@ public interface CarModelMapper {
 
     List<CarModel> queryByIds(@Param("ids") List<Long> ids);
 
+
+    CarModel detailByCode(@Param("code") String code);
+
+
+    CarModel queryByCarVin(@Param("vin") String vin);
+
+
 }

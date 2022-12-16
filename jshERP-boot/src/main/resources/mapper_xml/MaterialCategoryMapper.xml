@@ -195,7 +195,15 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="queryByIds" resultMap="BaseResultMap">
+      select * from jsh_material_category
+        where id in
+        <foreach collection="ids" item="id" separator="," close=")" open="(">
+          #{id}
+        </foreach>
+        and delete_flag != '1'
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update jsh_material_category
     <set>
       <if test="record.id != null">

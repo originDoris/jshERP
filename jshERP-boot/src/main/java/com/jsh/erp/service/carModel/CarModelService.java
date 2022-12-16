@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsh.erp.datasource.entities.CarModel;
+import com.jsh.erp.datasource.entities.shopping.CarModelCategory;
 import com.jsh.erp.datasource.entities.User;
 import com.jsh.erp.datasource.mappers.CarModelMapper;
 import com.jsh.erp.datasource.query.CarModelQuery;
@@ -175,6 +176,22 @@ public class CarModelService {
         });
         return true;
     }
+
+
+    public CarModel detailCode(String code) throws BusinessParamCheckingException {
+        if (StringUtils.isBlank(code)) {
+            throw new BusinessParamCheckingException(CAR_MODEL_CODE_IS_NULL_CODE, CAR_MODEL_CODE_IS_NULL_MSG);
+        }
+        return carModelMapper.detailByCode(code);
+    }
+
+    public CarModel detailVin(String vin) throws BusinessParamCheckingException {
+        if (StringUtils.isBlank(vin)) {
+            throw new BusinessParamCheckingException(CAR_MODEL_VIN_IS_NULL_CODE, CAR_MODEL_VIN_IS_NULL_MSG);
+        }
+        return carModelMapper.queryByCarVin(vin);
+    }
+
 
     /**
      * 导出数据

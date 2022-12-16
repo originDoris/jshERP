@@ -625,8 +625,15 @@ public class DepotItemService {
                 if ("采购退货".equals(depotHead.getSubType())) {
                     productService.batchRemoveByCode(depotItem.getProductCode());
                 }else{
+                    String status = "1";
+                    if ("入库".equals(depotHead.getType())) {
+                        status = "2";
+                    }
+                    if ("出库".equals(depotHead.getType())) {
+                        status = "4";
+                    }
                     //更新商品单据号
-                    productService.modifyHeadCode(depotItem.getProductCode(), depotHead.getNumber());
+                    productService.modifyHeadCode(depotItem.getProductCode(), depotHead.getNumber(), status);
                 }
             }
             //如果关联单据号非空则更新订单的状态,单据类型：采购入库单或销售出库单或盘点复盘单

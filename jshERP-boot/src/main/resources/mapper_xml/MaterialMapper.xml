@@ -274,7 +274,19 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="queryShopping" parameterType="com.jsh.erp.datasource.query.ShoppingQuery" resultMap="BaseResultMap">
+      SELECT
+        a.*
+      FROM
+        jsh_material a
+          LEFT JOIN jsh_material_extend b on a.id = b.material_id
+        where a.delete_flag != '1'
+        and b.car_model_code = #{carModelCode}
+        <if test='name != null and name != ""'>
+          and `name` like like concat('%',#{name},'%')
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update jsh_material
     <set>
       <if test="record.id != null">

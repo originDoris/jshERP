@@ -54,7 +54,18 @@ public class Product implements Serializable {
 
     private String categoryName;
 
-    private String headCode;
+    private String inHeadCode;
+
+    private String outHeadCode;
+
+    /**
+     * 1. 未入库
+     * 2. 已入库
+     * 3. 待出库
+     * 4. 已出库
+     * 5. 销售退货
+     */
+    private String status;
 
     private boolean qrFlag;
 

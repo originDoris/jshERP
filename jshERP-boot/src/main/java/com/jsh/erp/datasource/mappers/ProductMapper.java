@@ -30,13 +30,15 @@ public interface ProductMapper {
 
     boolean save(Product product);
 
-    List<Product> queryQrCodeIsNotNull(@Param("query") ProductQuery query,@Param("returnFlag") Boolean returnFlag);
-    boolean modifyHeadCode(@Param("codes") List<String> codes, @Param("headCode") String headCode);
+    List<Product> queryByStatus(@Param("query") ProductQuery query);
+    boolean modifyInHeadCode(@Param("codes") List<String> codes, @Param("headCode") String headCode);
+    boolean modifyOutHeadCode(@Param("codes") List<String> codes, @Param("headCode") String headCode);
 
     boolean batchSave(@Param("list") List<Product> products);
 
     List<Product> queryByIds(@Param("ids") List<Long> ids);
 
     Product detailByCode(@Param("code") String code);
+
 
 }

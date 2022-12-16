@@ -22,23 +22,25 @@
     <result column="vin" property="vin"/>
     <result column="car_model" property="carModel"/>
     <result column="categoryName" property="categoryName"/>
-    <result column="head_code" property="headCode"/>
+    <result column="in_head_code" property="inHeadCode"/>
+    <result column="out_head_code" property="outHeadCode"/>
+    <result column="status" property="status"/>
     <result column="qr_flag" property="qrFlag"/>
     <result column="images" property="images" typeHandler="com.jsh.erp.handler.StringArrayHandler"/>
   </resultMap>
 
   <sql id="Base_Column_List">
-    id,operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag,images
+    id,operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,in_head_code,qr_flag,images,out_head_code,status
   </sql>
   <insert id="save" parameterType="com.jsh.erp.datasource.entities.Product">
-    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag,images)
-        value(#{operator},#{productName},#{color},#{location},#{createTime},#{updateTime},#{code},#{depotId},#{materialId},#{remark},#{carModelCode},#{deleteFlag},#{headCode},#{qrFlag},#{images,typeHandler=com.jsh.erp.handler.StringArrayHandler});
+    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,in_head_code,qr_flag,images,out_head_code,status)
+        value(#{operator},#{productName},#{color},#{location},#{createTime},#{updateTime},#{code},#{depotId},#{materialId},#{remark},#{carModelCode},#{deleteFlag},#{inHeadCode},#{qrFlag},#{images,typeHandler=com.jsh.erp.handler.StringArrayHandler},#{outHeadCode},#{status});
   </insert>
   <insert id="batchSave">
-    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,head_code,qr_flag,images)
+    insert into jsh_product (operator,product_name,color,location,create_time,update_time,code,depot_id,material_id,remark,car_model_code,delete_flag,in_head_code,qr_flag,images,out_head_code,status)
       values
         <foreach collection="list" open="" close="" item="product" separator=",">
-            (#{product.operator},#{product.productName},#{product.color},#{product.location},#{product.createTime},#{product.updateTime},#{product.code},#{product.depotId},#{product.materialId},#{product.remark},#{product.carModelCode},#{product.deleteFlag},#{product.headCode},#{product.qrFlag},#{product.images,typeHandler=com.jsh.erp.handler.StringArrayHandler})
+            (#{product.operator},#{product.productName},#{product.color},#{product.location},#{product.createTime},#{product.updateTime},#{product.code},#{product.depotId},#{product.materialId},#{product.remark},#{product.carModelCode},#{product.deleteFlag},#{product.inHeadCode},#{product.qrFlag},#{product.images,typeHandler=com.jsh.erp.handler.StringArrayHandler},#{product.outHeadCode},#{product.status})
         </foreach>
   </insert>
   <update id="modify" parameterType="com.jsh.erp.datasource.entities.Product">
@@ -80,23 +82,35 @@
       <if test='deleteFlag != null and deleteFlag != ""'>
         delete_flag = #{deleteFlag},
       </if>
-      <if test='headCode != null and headCode != ""'>
-        head_code = #{headCode},
+      <if test='inHeadCode != null and inHeadCode != ""'>
+        in_head_code = #{inHeadCode},
       </if>
       <if test='qrFlag != null'>
         qr_flag = #{qrFlag},
       </if>
       <if test='images != null and images != ""'>
-        images = #{images,typeHandler=com.jsh.erp.handler.StringArrayHandler}
+        images = #{images,typeHandler=com.jsh.erp.handler.StringArrayHandler},
+      </if>
+      <if test='outHeadCode != null and outHeadCode != ""'>
+        out_head_code = #{outHeadCode},
+      </if>
+      <if test='status != null and status != ""'>
+        status = #{status}
       </if>
     </set>
     where id = #{id}
   </update>
-  <update id="modifyHeadCode">
-    update jsh_product set head_code = #{headCode} where code in
+  <update id="modifyInHeadCode">
+    update jsh_product set in_head_code = #{headCode} ,status = '2' where code in
                                                 <foreach collection="codes" open="(" close=")" separator="," item="code">
                                                   #{code}
                                                 </foreach>
+  </update>
+  <update id="modifyOutHeadCode">
+    update jsh_product set out_head_code = #{headCode} ,status = '4' where code in
+    <foreach collection="codes" open="(" close=")" separator="," item="code">
+      #{code}
+    </foreach>
   </update>
   <delete id="delete">
     delete from jsh_product where id = #{id≈}
@@ -158,12 +172,15 @@
     <if test="query.qrFlag != null">
       and a.qr_flag = #{query.qrFlag}
     </if>
+    <if test='query.status != null and query.status != ""'>
+      and a.status = #{query.status}
+    </if>
     and a.delete_flag != '1'
   </select>
   <select id="detail" resultMap="BaseResultMap">
     select * from jsh_product where id = #{id}
   </select>
-  <select id="queryQrCodeIsNotNull" resultMap="BaseResultMap">
+  <select id="queryByStatus" resultMap="BaseResultMap">
     SELECT
     a.*,
     b.NAME as depotName,
@@ -195,13 +212,10 @@
     <if test='query.operator != null and query.operator != ""'>
       and a.operator = #{query.operator}
     </if>
+    <if test='query.status != null and query.status != ""'>
+      and a.status = #{query.status}
+    </if>
     and a.qr_flag = true;
-    <if test='returnFlag != null and returnFlag == true'>
-      and a.head_code is not null
-    </if>
-    <if test='returnFlag != null and returnFlag == false'>
-      and a.head_code is null
-    </if>
     and a.delete_flag != '1'
 
   </select>

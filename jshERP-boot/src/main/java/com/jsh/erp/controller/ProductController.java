@@ -60,14 +60,16 @@ public class ProductController {
 
     @GetMapping("/queryWarehousingList")
     public BaseResponseInfo queryWarehousingList(ProductQuery productQuery) {
-        List<Product> list = productService.getQrCodeIsNotNull(productQuery, false);
+        productQuery.setStatus("1");
+        List<Product> list = productService.queryByStatus(productQuery);
         return new BaseResponseInfo(SERVICE_SUCCESS_CODE, list);
     }
 
 
     @GetMapping("/queryReturnList")
     public BaseResponseInfo queryReturnList(ProductQuery productQuery) {
-        List<Product> list = productService.getQrCodeIsNotNull(productQuery, true);
+        productQuery.setStatus("2");
+        List<Product> list = productService.queryByStatus(productQuery);
         return new BaseResponseInfo(SERVICE_SUCCESS_CODE, list);
     }
 

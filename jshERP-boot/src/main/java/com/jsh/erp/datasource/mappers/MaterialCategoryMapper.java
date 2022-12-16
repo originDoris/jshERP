@@ -27,4 +27,6 @@ public interface MaterialCategoryMapper {
     int updateByPrimaryKeySelective(MaterialCategory record);
 
     int updateByPrimaryKey(MaterialCategory record);
+
+    List<MaterialCategory> queryByIds(@Param("ids") List<Long> ids);
 }

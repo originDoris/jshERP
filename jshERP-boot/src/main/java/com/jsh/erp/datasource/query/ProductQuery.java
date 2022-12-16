@@ -35,4 +35,12 @@ public class ProductQuery extends BaseQuery {
 
     private Boolean qrFlag;
 
+    /**
+     * 1. 未入库
+     * 2. 已入库
+     * 3. 已出库
+     */
+    private String status;
+
+
 }

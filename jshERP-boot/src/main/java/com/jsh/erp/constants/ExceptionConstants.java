@@ -523,11 +523,11 @@ public class ExceptionConstants {
     public static final int DOWNLOAD_CAR_MODEL_FAIL_CODE = 4006;
     public static final String DOWNLOAD_CAR_MODEL_FAIL_MSG = "车型信息下载失败！";
 
-    public static final int SAVE_CAR_MODEL_FAIL_CODE = 4007;
-    public static final String SAVE_CAR_MODEL_FAIL_MSG = "保存车型失败！";
+    public static final int CAR_MODEL_CODE_IS_NULL_CODE = 4007;
+    public static final String CAR_MODEL_CODE_IS_NULL_MSG = "车型代码为空！";
 
-    public static final int MODIFY_CAR_MODEL_FAIL_CODE = 4006;
-    public static final String MODIFY_CAR_MODEL_FAIL_MSG = "修改车型失败！";
+    public static final int CAR_MODEL_VIN_IS_NULL_CODE = 4008;
+    public static final String CAR_MODEL_VIN_IS_NULL_MSG = "车型VIN为空！";
 
 
     /**
@@ -562,22 +562,24 @@ public class ExceptionConstants {
     public static final int PRODUCT_ID_LIST_IS_NULL_CODE = 4304;
     public static final String PRODUCT_ID_LIST_IS_NULL_MSG = "商品id列表不能为空！";
 
-    public static final int DOWNLOAD_PRODUCT_IS_NULL_CODE = 4305;
-    public static final String DOWNLOAD_PRODUCT_IS_NULL_MSG = "导出商品数据为空！";
-
-    public static final int DOWNLOAD_PRODUCT_FAIL_CODE = 4306;
-    public static final String DOWNLOAD_PRODUCT_FAIL_MSG = "商品信息下载失败！";
-
-    public static final int PRODUCT_STATUS_IS_NULL_CODE = 4307;
-    public static final String PRODUCT_STATUS_IS_NULL_MSG = "商品状态为空！";
-
     public static final int PRODUCT_CODE_IS_NULL_CODE = 4309;
     public static final String PRODUCT_CODE_IS_NULL_MSG = "商品CODE为空！";
 
     public static final int PRODUCT_IS_NULL_CODE = 4310;
     public static final String PRODUCT_IS_NULL_MSG = "商品信息为空！";
 
+    /**
+     * 4401 ~ 4500 小程序
+     */
+    public static final int CAR_MODEL_IS_NULL_CODE = 4401;
+    public static final String CAR_MODEL_IS_NULL_MSG = "车型不存在，请确认!";
 
+    public static final int PRODUCT_NON_EXIST_CODE = 4402;
+    public static final String PRODUCT_NON_EXIST_MSG = "商品不存在！";
+
+
+    public static final int PRODUCT_STATUS_INCORRECT_CODE = 4403;
+    public static final String PRODUCT_STATUS_INCORRECT_MSG = "商品状态不正确，只有已入库状态可以出库！";
 
     /**
      * 标准正常返回/操作成功返回

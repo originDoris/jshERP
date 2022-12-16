@@ -3,6 +3,8 @@ package com.jsh.erp.datasource.mappers;
 import com.jsh.erp.datasource.entities.Material;
 import com.jsh.erp.datasource.entities.MaterialExample;
 import java.util.List;
+
+import com.jsh.erp.datasource.query.ShoppingQuery;
 import org.apache.ibatis.annotations.Param;
 
 public interface MaterialMapper {
@@ -27,4 +29,8 @@ public interface MaterialMapper {
     int updateByPrimaryKeySelective(Material record);
 
     int updateByPrimaryKey(Material record);
+
+
+    List<Material> queryShopping(ShoppingQuery shoppingQuery);
+
 }

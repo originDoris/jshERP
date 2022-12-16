@@ -138,5 +138,11 @@
       #{id}
     </foreach>
   </select>
+    <select id="detailByCode" resultType="com.jsh.erp.datasource.entities.CarModel">
+      select * from jsh_car_model where code = #{code} and delete_flag != '1'
+    </select>
+  <select id="queryByCarVin" resultMap="BaseResultMap">
+    select * from jsh_car_model where car_vin = #{vin} and delete_flag != '1'
+  </select>
 
 </mapper>
