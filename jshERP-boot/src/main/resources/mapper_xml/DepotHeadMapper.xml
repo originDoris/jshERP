@@ -32,6 +32,7 @@
     <result column="link_number" jdbcType="VARCHAR" property="linkNumber" />
     <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
     <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag" />
+    <result column="address_id" property="addressId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -96,7 +97,7 @@
     account_id, change_amount, back_amount, total_price, pay_type, bill_type, remark, 
     file_name, sales_man, account_id_list, account_money_list, discount, discount_money, 
     discount_last_money, other_money, deposit, status, purchase_status, link_number, 
-    tenant_id, delete_flag
+    tenant_id, delete_flag, address_id
   </sql>
   <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.DepotHeadExample" resultMap="BaseResultMap">
     select
@@ -138,7 +139,7 @@
       account_id_list, account_money_list, discount, 
       discount_money, discount_last_money, other_money, 
       deposit, status, purchase_status, 
-      link_number, tenant_id, delete_flag
+      link_number, tenant_id, delete_flag,address_id
       )
     values (#{id,jdbcType=BIGINT}, #{type,jdbcType=VARCHAR}, #{subType,jdbcType=VARCHAR}, 
       #{defaultNumber,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
@@ -149,7 +150,7 @@
       #{accountIdList,jdbcType=VARCHAR}, #{accountMoneyList,jdbcType=VARCHAR}, #{discount,jdbcType=DECIMAL}, 
       #{discountMoney,jdbcType=DECIMAL}, #{discountLastMoney,jdbcType=DECIMAL}, #{otherMoney,jdbcType=DECIMAL}, 
       #{deposit,jdbcType=DECIMAL}, #{status,jdbcType=VARCHAR}, #{purchaseStatus,jdbcType=VARCHAR}, 
-      #{linkNumber,jdbcType=VARCHAR}, #{tenantId,jdbcType=BIGINT}, #{deleteFlag,jdbcType=VARCHAR}
+      #{linkNumber,jdbcType=VARCHAR}, #{tenantId,jdbcType=BIGINT}, #{deleteFlag,jdbcType=VARCHAR},#{addressId}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.DepotHead">
@@ -245,6 +246,9 @@
       <if test="deleteFlag != null">
         delete_flag,
       </if>
+      <if test='addressId != null'>
+        address_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -337,12 +341,28 @@
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test='addressId != null'>
+        #{addressId}
+      </if>
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.jsh.erp.datasource.entities.DepotHeadExample" resultType="java.lang.Long">
     select count(*) from jsh_depot_head
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <select id="getCount" resultType="java.lang.Long">
+    select count(*) from jsh_depot_head
+    where delete_flag != '1'
+    and sub_type = '销售订单'
+    and `type` = '其它'
+    and organ_id = #{userId}
+    <if test='statusFlag != null and statusFlag == true'>
+      and (status = '0' or status = '1')
+    </if>
+    <if test='statusFlag != null and statusFlag == false'>
+      and (status = '2' or status = '3')
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
@@ -438,6 +458,9 @@
       <if test="record.deleteFlag != null">
         delete_flag = #{record.deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test='record.addressId != null'>
+        address_id = #{record.addressId}
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -474,7 +497,8 @@
       purchase_status = #{record.purchaseStatus,jdbcType=VARCHAR},
       link_number = #{record.linkNumber,jdbcType=VARCHAR},
       tenant_id = #{record.tenantId,jdbcType=BIGINT},
-      delete_flag = #{record.deleteFlag,jdbcType=VARCHAR}
+      delete_flag = #{record.deleteFlag,jdbcType=VARCHAR},
+      address_id = #{record.addressId}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -569,6 +593,9 @@
       <if test="deleteFlag != null">
         delete_flag = #{deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test='addressId != null'>
+        address_id = #{addressId}
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -602,7 +629,8 @@
       purchase_status = #{purchaseStatus,jdbcType=VARCHAR},
       link_number = #{linkNumber,jdbcType=VARCHAR},
       tenant_id = #{tenantId,jdbcType=BIGINT},
-      delete_flag = #{deleteFlag,jdbcType=VARCHAR}
+      delete_flag = #{deleteFlag,jdbcType=VARCHAR},
+      address_id = #{addressId}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

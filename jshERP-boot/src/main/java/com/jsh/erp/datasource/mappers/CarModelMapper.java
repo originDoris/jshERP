@@ -36,5 +36,7 @@ public interface CarModelMapper {
 
     CarModel queryByCarVin(@Param("vin") String vin);
 
+    List<CarModel> queryByCodes(@Param("codes") List<String> codes);
+
 
 }

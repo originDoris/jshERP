@@ -233,4 +233,7 @@ public interface DepotHeadMapperEx {
     BigDecimal getFinishDepositByNumberExceptCurrent(
             @Param("linkNumber") String linkNumber,
             @Param("number") String number);
+
+
+    List<DepotHeadVo4List> queryList(@Param("statusFlag") Boolean statusFlag, @Param("userId") Long userId);
 }

@@ -44,6 +44,9 @@ public interface DepotItemMapperEx {
     List<DepotItemVo4WithInfoEx> getDetailList(
             @Param("headerId") Long headerId);
 
+    List<DepotItemVo4WithInfoEx> getDetailListByIds(
+            @Param("headerIds") List<Long> headerIds);
+
     List<DepotItemVo4WithInfoEx> findByAll(
             @Param("materialParam") String materialParam,
             @Param("endTime") String endTime,

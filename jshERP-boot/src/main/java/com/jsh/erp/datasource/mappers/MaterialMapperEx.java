@@ -31,7 +31,8 @@ public interface MaterialMapperEx {
             @Param("rows") Integer rows,
             @Param("oem") String oem,
             @Param("vin") String vin,
-            @Param("carModelCode") String carModelCode);
+            @Param("carModelCode") String carModelCode,
+            @Param("mIds") List<Long> ids);
 
     Long countsByMaterial(
             @Param("materialParam") String materialParam,

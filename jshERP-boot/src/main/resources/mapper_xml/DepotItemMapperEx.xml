@@ -34,6 +34,8 @@
         <result column="AnotherDepotName" jdbcType="VARCHAR" property="AnotherDepotName" />
         <result column="barCode" jdbcType="VARCHAR" property="barCode" />
         <result column="purchase_decimal" jdbcType="DECIMAL" property="purchaseDecimal" />
+        <result column="img_name" property="imgName" />
+        <result column="car_model_code" property="carModelCode" />
     </resultMap>
 
     <resultMap extends="com.jsh.erp.datasource.mappers.DepotItemMapper.BaseResultMap" id="ResultByMaterial" type="com.jsh.erp.datasource.entities.DepotItemVo4WithInfoEx">
@@ -236,7 +238,7 @@
     <select id="getDetailList" parameterType="com.jsh.erp.datasource.entities.DepotItemExample" resultMap="ResultWithInfoExMap">
         select di.*,m.name MName,m.model MModel,m.unit MaterialUnit,m.color MColor,m.standard MStandard,m.mfrs MMfrs,
         m.other_field1 MOtherField1,m.other_field2 MOtherField2,m.other_field3 MOtherField3,m.enable_serial_number, m.enable_batch_number,
-        dp1.name DepotName,dp2.name AnotherDepotName, me.bar_code barCode, me.purchase_decimal
+        dp1.name DepotName,dp2.name AnotherDepotName, me.bar_code barCode, me.purchase_decimal,m.img_name,me.car_model_code
         from jsh_depot_item di
         left join jsh_material m on di.material_id=m.id  and ifnull(m.delete_flag,'0') !='1'
         left join jsh_material_extend me on me.id=di.material_extend_id  and ifnull(me.delete_Flag,'0') !='1'
@@ -753,5 +755,21 @@
         and ifnull(dh.delete_flag,'0') !='1'
         and di.batch_number = #{batchNumber}
         and dh.type = '入库'
+    </select>
+    <select id="getDetailListByIds" resultMap="ResultWithInfoExMap">
+        select di.*,m.name MName,m.model MModel,m.unit MaterialUnit,m.color MColor,m.standard MStandard,m.mfrs MMfrs,
+               m.other_field1 MOtherField1,m.other_field2 MOtherField2,m.other_field3 MOtherField3,m.enable_serial_number, m.enable_batch_number,
+               dp1.name DepotName,dp2.name AnotherDepotName, me.bar_code barCode, me.purchase_decimal,m.img_name,me.car_model_code
+        from jsh_depot_item di
+        left join jsh_material m on di.material_id=m.id  and ifnull(m.delete_flag,'0') !='1'
+        left join jsh_material_extend me on me.id=di.material_extend_id  and ifnull(me.delete_Flag,'0') !='1'
+        left join jsh_depot dp1 on di.depot_id=dp1.id and ifnull(dp1.delete_Flag,'0') !='1'
+        left join jsh_depot dp2 on di.another_depot_id=dp2.id and ifnull(dp2.delete_Flag,'0') !='1'
+        where ifnull(di.delete_flag,'0') !='1'
+        and di.header_id in
+        <foreach collection="headerIds" item="id" separator="," close=")" open="(">
+           #{id}
+        </foreach>
+        order by di.id asc
     </select>
 </mapper>

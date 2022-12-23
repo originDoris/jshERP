@@ -73,6 +73,18 @@ public class DepotItemService {
 
     @Resource
     private ProductService productService;
+
+
+
+    public List<DepotItemVo4WithInfoEx> getDetailByIds(List<Long> ids){
+        return depotItemMapperEx.getDetailListByIds(ids);
+    }
+
+    public List<DepotItemVo4WithInfoEx> getDetail(Long headId){
+        return depotItemMapperEx.getDetailList(headId);
+    }
+
+
     public DepotItem getDepotItem(long id)throws Exception {
         DepotItem result=null;
         try{

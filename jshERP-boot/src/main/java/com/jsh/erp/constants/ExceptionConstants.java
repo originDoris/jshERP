@@ -581,6 +581,30 @@ public class ExceptionConstants {
     public static final int PRODUCT_STATUS_INCORRECT_CODE = 4403;
     public static final String PRODUCT_STATUS_INCORRECT_MSG = "商品状态不正确，只有已入库状态可以出库！";
 
+    public static final int ADDRESS_ID_IS_NULL_CODE = 4404;
+    public static final String ADDRESS_ID_IS_NULL_MSG = "收货地址id为空！";
+    public static final int ADDRESS_PARAM_ERROR = 4405;
+
+    public static final int ADDRESS_ID_LIST_IS_NULL_CODE = 4406;
+    public static final String ADDRESS_ID_LIST_IS_NULL_MSG = "收货地址id列表不能为空！";
+
+    public static final int ADDRESS_IS_NULL_CODE = 4407;
+    public static final String ADDRESS_IS_NULL_MSG = "用户没有收货地址！";
+
+
+
+    public static final int CART_ID_IS_NULL_CODE = 4408;
+    public static final String CART_ID_IS_NULL_MSG = "购物车商品id为空！";
+    public static final int CART_PARAM_ERROR = 4409;
+
+    public static final int CART_ID_LIST_IS_NULL_CODE = 4406;
+    public static final String CART_ID_LIST_IS_NULL_MSG = "收货地址id列表不能为空！";
+
+    public static final int NOT_LOGIN_CODE = 4408;
+    public static final String NOT_LOGIN_MSG = "用户未登陆!";
+
+    public static final int CART_IS_NULL_CODE = 4407;
+    public static final String CART_IS_NULL_MSG = "用户没有收货地址！";
     /**
      * 标准正常返回/操作成功返回
      * @return

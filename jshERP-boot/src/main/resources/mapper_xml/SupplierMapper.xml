@@ -26,6 +26,8 @@
     <result column="sort" jdbcType="VARCHAR" property="sort" />
     <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
     <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag" />
+    <result column="open_id" property="openId"/>
+    <result column="wx_flag" property="wxFlag"/>
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -88,7 +90,7 @@
   <sql id="Base_Column_List">
     id, supplier, contacts, phone_num, email, description, isystem, type, enabled, advance_in, 
     begin_need_get, begin_need_pay, all_need_get, all_need_pay, fax, telephone, address, 
-    tax_num, bank_name, account_number, tax_rate, sort, tenant_id, delete_flag
+    tax_num, bank_name, account_number, tax_rate, sort, tenant_id, delete_flag, open_id,wx_flag
   </sql>
   <select id="selectByExample" parameterType="com.jsh.erp.datasource.entities.SupplierExample" resultMap="BaseResultMap">
     select
@@ -128,7 +130,7 @@
       all_need_get, all_need_pay, fax, 
       telephone, address, tax_num, 
       bank_name, account_number, tax_rate, 
-      sort, tenant_id, delete_flag
+      sort, tenant_id, delete_flag,open_id,wx_flag
       )
     values (#{id,jdbcType=BIGINT}, #{supplier,jdbcType=VARCHAR}, #{contacts,jdbcType=VARCHAR}, 
       #{phoneNum,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
@@ -137,10 +139,10 @@
       #{allNeedGet,jdbcType=DECIMAL}, #{allNeedPay,jdbcType=DECIMAL}, #{fax,jdbcType=VARCHAR}, 
       #{telephone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{taxNum,jdbcType=VARCHAR}, 
       #{bankName,jdbcType=VARCHAR}, #{accountNumber,jdbcType=VARCHAR}, #{taxRate,jdbcType=DECIMAL}, 
-      #{sort,jdbcType=VARCHAR}, #{tenantId,jdbcType=BIGINT}, #{deleteFlag,jdbcType=VARCHAR}
+      #{sort,jdbcType=VARCHAR}, #{tenantId,jdbcType=BIGINT}, #{deleteFlag,jdbcType=VARCHAR},#{openId},#{wxFlag}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.jsh.erp.datasource.entities.Supplier">
+  <insert id="insertSelective" keyProperty="id" keyColumn="id" useGeneratedKeys="true" parameterType="com.jsh.erp.datasource.entities.Supplier">
     insert into jsh_supplier
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -214,6 +216,12 @@
       </if>
       <if test="deleteFlag != null">
         delete_flag,
+      </if>
+      <if test='openId != null'>
+        open_id,
+      </if>
+      <if test='wxFlag != null'>
+        wx_flag
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -289,6 +297,12 @@
       <if test="deleteFlag != null">
         #{deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test='openId != null'>
+        #{openId},
+      </if>
+      <if test='wxFlag != null'>
+        #{wxFlag}
+      </if>
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.jsh.erp.datasource.entities.SupplierExample" resultType="java.lang.Long">
@@ -296,6 +310,9 @@
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
+  </select>
+  <select id="queryByOpenId" resultMap="BaseResultMap">
+    select * from jsh_supplier where open_id = #{openId} and delete_flag != '1'
   </select>
   <update id="updateByExampleSelective" parameterType="map">
     update jsh_supplier
@@ -372,6 +389,12 @@
       <if test="record.deleteFlag != null">
         delete_flag = #{record.deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test='record.openId != null'>
+        open_id = #{record.openId},
+      </if>
+      <if test='record.wxFlag != null'>
+        wx_flag = #{record.wxFlag}
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -402,7 +425,9 @@
       tax_rate = #{record.taxRate,jdbcType=DECIMAL},
       sort = #{record.sort,jdbcType=VARCHAR},
       tenant_id = #{record.tenantId,jdbcType=BIGINT},
-      delete_flag = #{record.deleteFlag,jdbcType=VARCHAR}
+      delete_flag = #{record.deleteFlag,jdbcType=VARCHAR},
+      open_id = #{record.openId},
+      wx_flag = #{record.wxFlag}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -479,6 +504,12 @@
       <if test="deleteFlag != null">
         delete_flag = #{deleteFlag,jdbcType=VARCHAR},
       </if>
+      <if test='openId != null'>
+        open_id = #{openId},
+      </if>
+      <if test='wxFlag != null'>
+        wx_flag = #{wxFlag}
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -506,7 +537,9 @@
       tax_rate = #{taxRate,jdbcType=DECIMAL},
       sort = #{sort,jdbcType=VARCHAR},
       tenant_id = #{tenantId,jdbcType=BIGINT},
-      delete_flag = #{deleteFlag,jdbcType=VARCHAR}
+      delete_flag = #{deleteFlag,jdbcType=VARCHAR},
+      open_id = #{openId},
+      wx_flag = #{wxFlag}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

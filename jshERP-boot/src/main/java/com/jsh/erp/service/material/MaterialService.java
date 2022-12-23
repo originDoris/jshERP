@@ -131,7 +131,7 @@ public class MaterialService {
                 idList = getListByParentId(Long.parseLong(categoryId));
             }
             list = materialMapperEx.selectByConditionMaterial(materialParam, color, weight, expiryNum,
-                    enableSerialNumber, enableBatchNumber, enabled, remark, idList, mpList, offset, rows, oem, vin, carModelCode);
+                    enableSerialNumber, enableBatchNumber, enabled, remark, idList, mpList, offset, rows, oem, vin, carModelCode, null);
             if (null != list && list.size() > 0) {
                 Map<Long, BigDecimal> currentStockMap = getCurrentStockMapByMaterialList(list);
                 for (MaterialVo4Unit m : list) {

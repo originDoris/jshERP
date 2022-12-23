@@ -88,6 +88,7 @@ public class ProductService {
         product.setOperator(userId);
         product.setCreateTime(new Date());
         product.setDeleteFlag("0");
+        product.setStatus("1");
         if (StringUtils.isBlank(product.getCode())) {
             String code = sequenceService.buildOnlyNumber(CODE_PREFIX);
             product.setCode(code);

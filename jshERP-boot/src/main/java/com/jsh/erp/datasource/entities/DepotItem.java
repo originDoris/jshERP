@@ -63,6 +63,10 @@ public class DepotItem {
     private String anotherLocation;
 
     private List<String> productCode;
+
+    private String barCode;
+
+    private String unit;
     public Long getId() {
         return id;
     }

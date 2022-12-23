@@ -1,7 +1,10 @@
 package com.jsh.erp.datasource.entities;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 
+@Data
 public class DepotItemVo4WithInfoEx extends DepotItem{
 
     private Long MId;
@@ -48,6 +51,9 @@ public class DepotItemVo4WithInfoEx extends DepotItem{
 
     private String barCode;
 
+    private String imgName;
+
+    private String carModelCode;
     public Long getMId() {
         return MId;
     }

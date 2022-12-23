@@ -193,6 +193,11 @@ public class CarModelService {
     }
 
 
+    public List<CarModel> queryByCode(List<String> codes){
+        return carModelMapper.queryByCodes(codes);
+    }
+
+
     /**
      * 导出数据
      * @param ids 数据列表

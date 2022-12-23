@@ -1,7 +1,10 @@
 package com.jsh.erp.datasource.entities;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 
+@Data
 public class Supplier {
     private Long id;
 
@@ -50,6 +53,10 @@ public class Supplier {
     private Long tenantId;
 
     private String deleteFlag;
+
+    private String openId;
+
+    private Boolean wxFlag;
 
     public Long getId() {
         return id;

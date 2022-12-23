@@ -127,6 +127,7 @@ public class UserController {
                         token = token + "_" + user.getTenantId();
                     }
                     redisService.storageObjectBySession(token,"userId",user.getId());
+                    redisService.storageObjectBySession(token,"userName",loginName);
                     if(user.getTenantId()!=null) {
                         Tenant tenant = tenantService.getTenantByTenantId(user.getTenantId());
                         if(tenant!=null) {

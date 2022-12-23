@@ -150,26 +150,30 @@ public class SupplierService {
         try{
             supplier.setEnabled(true);
             result=supplierMapper.insertSelective(supplier);
+
             //新增客户时给当前用户自动授权
             if("客户".equals(supplier.getType())) {
-                Long userId = userService.getUserId(request);
-                Supplier sInfo = supplierMapperEx.getSupplierByNameAndType(supplier.getSupplier(), supplier.getType());
-                String ubKey = "[" + sInfo.getId() + "]";
-                List<UserBusiness> ubList = userBusinessService.getBasicData(userId.toString(), "UserCustomer");
-                if(ubList ==null || ubList.size() == 0) {
-                    JSONObject ubObj = new JSONObject();
-                    ubObj.put("type", "UserCustomer");
-                    ubObj.put("keyId", userId);
-                    ubObj.put("value", ubKey);
-                    userBusinessService.insertUserBusiness(ubObj, request);
-                } else {
-                    UserBusiness ubInfo = ubList.get(0);
-                    JSONObject ubObj = new JSONObject();
-                    ubObj.put("id", ubInfo.getId());
-                    ubObj.put("type", ubInfo.getType());
-                    ubObj.put("keyId", ubInfo.getKeyId());
-                    ubObj.put("value", ubInfo.getValue() + ubKey);
-                    userBusinessService.updateUserBusiness(ubObj, request);
+                List<User> userList = userService.getUser();
+                for (User user : userList) {
+                    Long userId = user.getId();
+                    Supplier sInfo = supplierMapperEx.getSupplierByNameAndType(supplier.getSupplier(), supplier.getType());
+                    String ubKey = "[" + sInfo.getId() + "]";
+                    List<UserBusiness> ubList = userBusinessService.getBasicData(userId.toString(), "UserCustomer");
+                    if(ubList ==null || ubList.size() == 0) {
+                        JSONObject ubObj = new JSONObject();
+                        ubObj.put("type", "UserCustomer");
+                        ubObj.put("keyId", userId);
+                        ubObj.put("value", ubKey);
+                        userBusinessService.insertUserBusiness(ubObj, request);
+                    } else {
+                        UserBusiness ubInfo = ubList.get(0);
+                        JSONObject ubObj = new JSONObject();
+                        ubObj.put("id", ubInfo.getId());
+                        ubObj.put("type", ubInfo.getType());
+                        ubObj.put("keyId", ubInfo.getKeyId());
+                        ubObj.put("value", ubInfo.getValue() + ubKey);
+                        userBusinessService.updateUserBusiness(ubObj, request);
+                    }
                 }
             }
             logService.insertLog("商家",
@@ -626,4 +630,11 @@ public class SupplierService {
         }
         return ExcelUtils.exportObjectsWithoutTitle(title, names, title, objects);
     }
+
+
+
+    public Supplier queryByOpenId(String openId){
+       return supplierMapper.queryByOpenId(openId);
+    }
+
 }

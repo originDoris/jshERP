@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsh.erp.datasource.mappers.CartMapper">
+  <resultMap id="BaseResultMap" type="com.jsh.erp.datasource.entities.shopping.Cart">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="operator"  property="operator" />
+    <result column="create_time" property="createTime" />
+    <result column="update_time" property="updateTime" />
+    <result column="tenant_id" property="tenantId" />
+    <result column="delete_flag" property="deleteFlag" />
+    <result column="material_id" property="materialId"/>
+    <result column="count" property="count"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id,operator,create_time,update_time,tenant_id,delete_flag,material_id,count
+  </sql>
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.Product">
+    insert into jsh_shopping_cart (operator,create_time,update_time,delete_flag,material_id,count)
+        value(#{operator},#{createTime},#{updateTime},#{deleteFlag},#{materialId},#{count});
+  </insert>
+  <update id="modify" parameterType="com.jsh.erp.datasource.entities.Product">
+    update jsh_shopping_cart
+    <set>
+      <if test='operator != null'>
+        operator = #{operator},
+      </if>
+      <if test='createTime != null'>
+        create_time = #{createTime},
+      </if>
+      <if test='updateTime != null'>
+        update_time = #{updateTime},
+      </if>
+      <if test='deleteFlag != null and deleteFlag != ""'>
+        delete_flag = #{deleteFlag},
+      </if>
+      <if test='materialId != null'>
+        material_id = #{materialId},
+      </if>
+      <if test='count != null '>
+        `count` = #{count}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <update id="delete">
+    update jsh_shopping_cart set delete_flag = '1' where id = #{id}
+  </update>
+  <update id="batchDelete">
+    update jsh_shopping_cart  set delete_flag = '1' where id in
+    <foreach collection="ids" open="(" close=")" item="id" separator=",">
+      #{id}
+    </foreach>
+  </update>
+  <select id="queryList" resultMap="BaseResultMap">
+    select * from jsh_shopping_cart
+    where delete_flag != '1'
+    <if test='query.operator != null'>
+      and operator = #{query.operator}
+    </if>
+  </select>
+  <select id="detail" resultMap="BaseResultMap">
+    select * from jsh_shopping_cart where id = #{id}
+  </select>
+  <select id="queryByIds" resultMap="BaseResultMap">
+    select * from jsh_shopping_cart
+    where id in
+    <foreach collection="ids" separator="," item="id" close=")" open="(">
+      #{id}
+    </foreach>
+  </select>
+  <select id="queryByMaterialId" resultMap="BaseResultMap">
+    select * from jsh_shopping_cart where operator = #{operator} and material_id = #{materialId} and delete_flag != '1'
+  </select>
+
+</mapper>

@@ -1,30 +1,35 @@
 package com.jsh.erp.service.shopping;
 
+import com.alibaba.fastjson.JSON;
 import com.jsh.erp.datasource.entities.*;
-import com.jsh.erp.datasource.entities.shopping.CarModelCategory;
-import com.jsh.erp.datasource.entities.shopping.ShoppingCategory;
-import com.jsh.erp.datasource.mappers.CarModelMapper;
+import com.jsh.erp.datasource.entities.shopping.*;
+import com.jsh.erp.datasource.mappers.CartMapper;
 import com.jsh.erp.datasource.mappers.MaterialCategoryMapper;
-import com.jsh.erp.datasource.mappers.MaterialMapper;
 import com.jsh.erp.datasource.mappers.MaterialMapperEx;
+import com.jsh.erp.datasource.query.CarModelQuery;
+import com.jsh.erp.datasource.query.CartQuery;
 import com.jsh.erp.datasource.query.ShoppingQuery;
+import com.jsh.erp.datasource.vo.DepotHeadVo4List;
 import com.jsh.erp.exception.BusinessParamCheckingException;
 import com.jsh.erp.service.carModel.CarModelService;
+import com.jsh.erp.service.depotHead.DepotHeadService;
+import com.jsh.erp.service.depotItem.DepotItemService;
 import com.jsh.erp.service.product.ProductService;
+import com.jsh.erp.service.redis.RedisService;
+import com.jsh.erp.service.sequence.SequenceService;
+import com.jsh.erp.service.user.UserService;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.jsh.erp.constants.ExceptionConstants.*;
-import static com.jsh.erp.constants.ExceptionConstants.PRODUCT_CODE_IS_NULL_MSG;
 
 /**
  * @author: origindoris
@@ -48,6 +53,200 @@ public class ShoppingService {
     @Resource
     private ProductService productService;
 
+    @Resource
+    private CartService cartService;
+
+    @Resource
+    private UserService userService;
+
+    @Resource
+    private RedisService redisService;
+
+    @Resource
+    private HttpServletRequest request;
+
+    @Resource
+    private DepotHeadService depotHeadService;
+
+    @Resource
+    private DepotItemService depotItemService;
+
+    @Resource
+    private SequenceService sequenceService;
+
+    @Resource
+    private AddressService addressService;
+
+    public static final String HEAD_CODE = "XSDD";
+
+
+    public Long getCount(Boolean statusFlag) throws Exception {
+        Long userId = userService.getUserId(request);
+        return depotHeadService.getCount(statusFlag,userId);
+    }
+
+
+    public OrderDetail queryOrderDetail(Long headId) throws Exception {
+        DepotHead depotHead = depotHeadService.getDepotHead(headId);
+        List<DepotItemVo4WithInfoEx> infoExList = depotItemService.getDetail(headId);
+        List<String> carModeCodes = infoExList.stream().map(DepotItemVo4WithInfoEx::getCarModelCode).distinct().collect(Collectors.toList());
+        List<CarModel> carModels = carModelService.queryByCode(carModeCodes);
+        Map<String, List<DepotItemVo4WithInfoEx>> materialMap = infoExList.stream().collect(Collectors.groupingBy(DepotItemVo4WithInfoEx::getCarModelCode));
+        OrderDetail orderDetail = new OrderDetail();
+        BeanUtils.copyProperties(depotHead, orderDetail);
+        Address detail = addressService.detail(orderDetail.getAddressId());
+        orderDetail.setAddressInfo(detail);
+        List<OrderDetailMaterial> materials = new ArrayList<>();
+        for (CarModel carModel : carModels) {
+            if (carModel == null) {
+                continue;
+            }
+            List<DepotItemVo4WithInfoEx> infoExes = materialMap.get(carModel.getCode());
+            if (infoExes == null || infoExes.isEmpty()) {
+                continue;
+            }
+            OrderDetailMaterial orderDetailMaterial = new OrderDetailMaterial();
+            BeanUtils.copyProperties(carModel, orderDetailMaterial);
+
+            List<OrderMaterial> materialList = new ArrayList<>();
+            for (DepotItemVo4WithInfoEx infoEx : infoExes) {
+                OrderMaterial orderMaterial = new OrderMaterial();
+                BeanUtils.copyProperties(infoEx, orderMaterial);
+                materialList.add(orderMaterial);
+            }
+            orderDetailMaterial.setMaterials(materialList);
+            materials.add(orderDetailMaterial);
+        }
+        orderDetail.setOrderDetail(materials);
+        return orderDetail;
+    }
+
+
+    public List<OrderInfo> queryOrderList(Boolean statusFlag) throws Exception {
+        Long userId = userService.getUserId(request);
+        List<DepotHeadVo4List> list = depotHeadService.queryOrderList(statusFlag,userId);
+        Map<Long, DepotHeadVo4List> categoryMap = list.stream().collect(Collectors.toMap(DepotHeadVo4List::getId, v -> v, (k1, k2) -> k1));
+        Set<Long> ids = categoryMap.keySet();
+        List<DepotItemVo4WithInfoEx> infoExList = depotItemService.getDetailByIds(new ArrayList<>(ids));
+        List<String> carModeCodes = infoExList.stream().map(DepotItemVo4WithInfoEx::getCarModelCode).distinct().collect(Collectors.toList());
+        List<CarModel> carModels = carModelService.queryByCode(carModeCodes);
+        Map<String, CarModel> carModelMap = carModels.stream().collect(Collectors.toMap(CarModel::getCode, v -> v, (k1, k2) -> k1));
+
+        Map<Long, List<DepotItemVo4WithInfoEx>> materialMap = infoExList.stream().collect(Collectors.groupingBy(DepotItemVo4WithInfoEx::getHeaderId));
+
+
+        List<Long> addressIds = list.stream().map(DepotHead::getAddressId).collect(Collectors.toList());
+
+        List<Address> addresses = addressService.queryByIds(addressIds);
+        Map<Long, Address> addressMap = addresses.stream().collect(Collectors.toMap(Address::getId, v -> v, (k1, k2) -> k1));
+
+        List<OrderInfo> result = new ArrayList<>();
+        for (DepotHeadVo4List depotHeadVo4List : list) {
+            OrderInfo orderInfo = new OrderInfo();
+            List<DepotItemVo4WithInfoEx> depotItemVo4WithInfoExes = materialMap.get(depotHeadVo4List.getId());
+            if (depotItemVo4WithInfoExes == null || depotItemVo4WithInfoExes.isEmpty()) {
+                continue;
+            }
+            BeanUtils.copyProperties(depotHeadVo4List, orderInfo);
+
+            List<OrderMaterial> orderMaterials = new ArrayList<>();
+            for (DepotItemVo4WithInfoEx depotItemVo4WithInfoEx : depotItemVo4WithInfoExes) {
+                OrderMaterial orderMaterial = new OrderMaterial();
+                BeanUtils.copyProperties(depotItemVo4WithInfoEx, orderMaterial);
+                orderMaterials.add(orderMaterial);
+                CarModel carModel = carModelMap.get(depotItemVo4WithInfoEx.getCarModelCode());
+                if (carModel == null) {
+                    continue;
+                }
+                orderMaterial.setCarModel(carModel);
+            }
+            orderInfo.setOrderMaterials(orderMaterials);
+            if ("0".equals(orderInfo.getStatus()) || "1".equals(orderInfo.getStatus())) {
+                orderInfo.setOrderStatus("0");
+            }else{
+                orderInfo.setOrderStatus("1");
+            }
+            result.add(orderInfo);
+            Address address = addressMap.get(orderInfo.getAddressId());
+            orderInfo.setAddressInfo(address);
+        }
+        return result;
+    }
+
+
+
+
+
+    public boolean generateSalesOrder(SalesOrder order) throws Exception {
+        List<Cart> carts = order.getCarts();
+        List<Long> cartIds = carts.stream().map(Cart::getCartId).collect(Collectors.toList());
+        carts = cartService.queryByIds(cartIds);
+        Map<Long, Cart> categoryMap = carts.stream().collect(Collectors.toMap(Cart::getMaterialId, v -> v, (k1, k2) -> k1));
+        Set<Long> materialIds = categoryMap.keySet();
+        List<MaterialVo4Unit> materialVo4Units = materialMapperEx.selectByConditionMaterial(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new ArrayList<>(materialIds));
+        if (materialVo4Units == null || materialVo4Units.isEmpty()) {
+            log.info("商品信息不存在！");
+            return false;
+        }
+
+        List<DepotItem> depotItems = new ArrayList<>();
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (MaterialVo4Unit materialVo4Unit : materialVo4Units) {
+            Long id = materialVo4Unit.getId();
+            Cart cart = categoryMap.get(id);
+            if (cart == null) {
+                continue;
+            }
+            Long count = cart.getCount();
+            BigDecimal wholesaleDecimal = materialVo4Unit.getWholesaleDecimal();
+            BigDecimal total = new BigDecimal(count);
+            BigDecimal multiply = total.multiply(wholesaleDecimal);
+            totalPrice = totalPrice.add(multiply);
+            DepotItem depotItem = new DepotItem();
+            depotItem.setBarCode(materialVo4Unit.getmBarCode());
+            depotItem.setUnit(materialVo4Unit.getUnit());
+            depotItem.setOperNumber(total);
+            depotItem.setUnitPrice(wholesaleDecimal);
+            depotItem.setAllPrice(multiply);
+            depotItem.setTaxLastMoney(multiply);
+
+            depotItems.add(depotItem);
+        }
+
+        // 生成head
+        DepotHead depotHead = generateHead(order, totalPrice);
+        depotHeadService.addDepotHeadAndDetail(JSON.toJSONString(depotHead), JSON.toJSONString(depotItems), request);
+
+        cartService.batchRemove(cartIds);
+        return true;
+    }
+
+
+    private DepotHead generateHead(SalesOrder order, BigDecimal totalPrice) throws Exception {
+        String headCode = sequenceService.buildOnlyNumber(HEAD_CODE);
+        DepotHead depotHead = new DepotHead();
+        depotHead.setDefaultNumber(headCode);
+        depotHead.setNumber(headCode);
+        depotHead.setStatus("0");
+        depotHead.setTotalPrice(totalPrice);
+        depotHead.setDiscountLastMoney(totalPrice);
+        Object userId = redisService.getObjectFromSessionByKey(request, "userId");
+        if (userId == null) {
+            throw new BusinessParamCheckingException(NOT_LOGIN_CODE, NOT_LOGIN_MSG);
+        }
+        depotHead.setOrganId(Long.parseLong(userId.toString()));
+        depotHead.setType("其它");
+        depotHead.setSubType("销售订单");
+        depotHead.setOperTime(new Date());
+        depotHead.setAddressId(order.getAddressId());
+        depotHead.setDiscount(BigDecimal.ZERO);
+        depotHead.setDiscountMoney(BigDecimal.ZERO);
+        depotHead.setChangeAmount(BigDecimal.ZERO);
+        return depotHead;
+    }
+
+
+
 
     public CarModelCategory queryCommodityList(ShoppingQuery shoppingQuery) throws BusinessParamCheckingException {
         CarModelCategory result = new CarModelCategory();
@@ -57,7 +256,7 @@ public class ShoppingService {
         }
         BeanUtils.copyProperties(carModel, result);
         result.setCategories(new ArrayList<>());
-        List<MaterialVo4Unit> materialVo4Units = materialMapperEx.selectByConditionMaterial(shoppingQuery.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, shoppingQuery.getCarModelCode());
+        List<MaterialVo4Unit> materialVo4Units = materialMapperEx.selectByConditionMaterial(shoppingQuery.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, shoppingQuery.getCarModelCode(), null);
         if (materialVo4Units == null || materialVo4Units.isEmpty()) {
             return result;
         }
@@ -116,12 +315,104 @@ public class ShoppingService {
         return productService.detail(code);
     }
 
-    public boolean productAdd(Product product) throws Exception {
+    public boolean warehousing(Product product) throws Exception {
         return productService.save(product);
     }
 
     public CarModel detailByVin(String vin) throws BusinessParamCheckingException {
         return carModelService.detailVin(vin);
     }
+
+
+    /**
+     * 加购物车
+     * @param cart
+     * @return
+     * @throws Exception
+     */
+    public boolean addCart(Cart cart) throws Exception {
+        Long materialId = cart.getMaterialId();
+        Long userId = userService.getUserId(request);
+        Cart detail = cartService.getByMaterialId(materialId, userId);
+        if (detail == null) {
+            return cartService.save(cart);
+        }
+        detail.setCount(detail.getCount() + cart.getCount());
+        return cartService.modify(detail);
+    }
+
+    /**
+     * 设置购物车商品数量
+     * @param cart
+     * @return
+     * @throws Exception
+     */
+    public boolean setCount(Cart cart) throws Exception {
+        Long materialId = cart.getMaterialId();
+        Long userId = userService.getUserId(request);
+        Cart detail = cartService.getByMaterialId(materialId, userId);
+        if (detail == null) {
+            return cartService.save(cart);
+        }
+        detail.setCount(cart.getCount());
+        return cartService.modify(detail);
+    }
+
+    public boolean removeCart(Long id) throws BusinessParamCheckingException {
+        return cartService.remove(id);
+    }
+
+
+
+    public List<CartDTO> queryCart() throws Exception {
+        Long userId = userService.getUserId(request);
+
+        CartQuery cartQuery = new CartQuery();
+        cartQuery.setOperator(userId);
+        List<Cart> carts = cartService.queryList(cartQuery);
+        if (carts == null || carts.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Map<Long, Cart> categoryMap = carts.stream().collect(Collectors.toMap(Cart::getMaterialId, v -> v, (k1, k2) -> k1));
+        Set<Long> materialIds = categoryMap.keySet();
+        List<MaterialVo4Unit> materialVo4Units = materialMapperEx.selectByConditionMaterial(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new ArrayList<>(materialIds));
+        if (materialVo4Units == null || materialVo4Units.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Map<String, List<MaterialVo4Unit>> materialMap = materialVo4Units.stream().collect(Collectors.groupingBy(MaterialVo4Unit::getCarModelCode));
+        Set<String> strings = materialMap.keySet();
+        List<CarModel> carModels = carModelService.queryByCode(new ArrayList<>(strings));
+
+        List<CartDTO> result = new ArrayList<>();
+
+        for (CarModel carModel : carModels) {
+            CartDTO cartDTO = new CartDTO();
+            String carModelCode = carModel.getCode();
+            List<MaterialVo4Unit> material = materialMap.get(carModelCode);
+            if (material == null) {
+                continue;
+            }
+            BeanUtils.copyProperties(carModel, cartDTO);
+            List<CartMaterial> materials = new ArrayList<>();
+            for (MaterialVo4Unit materialVo4Unit : material) {
+                CartMaterial cartMaterial = new CartMaterial();
+                Cart cart = categoryMap.get(materialVo4Unit.getId());
+                if (cart == null) {
+                    continue;
+                }
+                BeanUtils.copyProperties(materialVo4Unit, cartMaterial);
+                cartMaterial.setCount(cart.getCount());
+                cartMaterial.setCartId(cart.getId());
+                materials.add(cartMaterial);
+            }
+            cartDTO.setMaterials(materials);
+            result.add(cartDTO);
+        }
+        return result;
+    }
+
+
+
+
 
 }

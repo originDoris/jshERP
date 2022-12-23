@@ -27,4 +27,6 @@ public interface SupplierMapper {
     int updateByPrimaryKeySelective(Supplier record);
 
     int updateByPrimaryKey(Supplier record);
+
+    Supplier queryByOpenId(@Param("openId") String openId);
 }

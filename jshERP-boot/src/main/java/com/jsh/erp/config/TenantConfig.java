@@ -13,6 +13,7 @@ import net.sf.jsqlparser.expression.LongValue;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,8 @@ import java.util.List;
 @Service
 public class TenantConfig {
 
+    @Value("${default.tenant.id}")
+    private String defaultTenantId;
     @Bean
     public PaginationInterceptor paginationInterceptor(HttpServletRequest request) {
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();

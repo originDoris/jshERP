@@ -1,8 +1,11 @@
 package com.jsh.erp.datasource.entities;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Data
 public class DepotHead {
     private Long id;
 
@@ -63,6 +66,8 @@ public class DepotHead {
     private Long tenantId;
 
     private String deleteFlag;
+
+    private Long addressId;
 
     public Long getId() {
         return id;

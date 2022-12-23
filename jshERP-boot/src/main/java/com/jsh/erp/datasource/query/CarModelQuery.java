@@ -55,4 +55,6 @@ public class CarModelQuery extends BaseQuery {
 
     private String code;
 
+    private List<String> codes;
+
 }

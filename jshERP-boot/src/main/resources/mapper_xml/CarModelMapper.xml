@@ -125,6 +125,12 @@
     <if test='carModelQuery.tenantId != null'>
       and tenant_id = #{carModelQuery.tenantId}
     </if>
+    <if test='carModelQuery.codes != null and carModelQuery.codes.size() > 0'>
+      and code in
+      <foreach collection="codes" open="(" close=")" separator="," item="code">
+        #{code}
+      </foreach>
+    </if>
     and delete_flag != '1'
     order by update_time desc
   </select>
@@ -143,6 +149,13 @@
     </select>
   <select id="queryByCarVin" resultMap="BaseResultMap">
     select * from jsh_car_model where car_vin = #{vin} and delete_flag != '1'
+  </select>
+  <select id="queryByCodes" resultMap="BaseResultMap">
+    select * from jsh_car_model where delete_flag != '1'
+    and code in
+    <foreach collection="codes" open="(" close=")" separator="," item="code">
+      #{code}
+    </foreach>
   </select>
 
 </mapper>

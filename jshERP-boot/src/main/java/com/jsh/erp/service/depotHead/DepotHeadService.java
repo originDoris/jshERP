@@ -1254,4 +1254,16 @@ public class DepotHeadService {
         }
         return resList;
     }
+
+
+    public Long getCount(Boolean statusFlag,Long userId){
+        return depotHeadMapper.getCount(statusFlag, userId);
+    }
+
+
+    public List<DepotHeadVo4List> queryOrderList(Boolean statusFlag,Long userId){
+        return depotHeadMapperEx.queryList(statusFlag, userId);
+    }
+
+
 }

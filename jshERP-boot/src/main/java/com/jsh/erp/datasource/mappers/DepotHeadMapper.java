@@ -27,4 +27,7 @@ public interface DepotHeadMapper {
     int updateByPrimaryKeySelective(DepotHead record);
 
     int updateByPrimaryKey(DepotHead record);
+
+    Long getCount(@Param("statusFlag") Boolean statusFlag,@Param("userId") Long userId);
+
 }
