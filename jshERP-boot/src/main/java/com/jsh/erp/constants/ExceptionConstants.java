@@ -29,6 +29,21 @@ public class ExceptionConstants {
     public static final int DATA_WRITE_FAIL_CODE = 301;
     public static final String DATA_WRITE_FAIL_MSG = "数据写入异常";
 
+    public static final int WX_LOGIN_FAIL_CODE = 10001;
+    public static final String WX_LOGIN_FAIL_MSG = "微信登录失败";
+
+
+    public static final int WX_GET_ACCESS_TOKEN_FAIL_CODE = 10002;
+    public static final String WX_GET_ACCESS_TOKEN_FAIL_MSG = "获取微信token失败！";
+
+    public static final int WX_GET_PHONE_FAIL_CODE = 10003;
+    public static final String WX_GET_PHONE_FAIL_MSG = "获取用户电话号码失败！";
+
+    public static final int WX_CUSTOMER_NON_EXISTENT_CODE = 10004;
+    public static final String WX_CUSTOMER_NON_EXISTENT_MSG = "微信客户不存在！";
+
+
+
     /**
      * 系统运行时未知错误
      **/

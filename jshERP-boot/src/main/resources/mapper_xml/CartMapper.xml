@@ -15,11 +15,11 @@
   <sql id="Base_Column_List">
     id,operator,create_time,update_time,tenant_id,delete_flag,material_id,count
   </sql>
-  <insert id="save" parameterType="com.jsh.erp.datasource.entities.Product">
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.shopping.Cart">
     insert into jsh_shopping_cart (operator,create_time,update_time,delete_flag,material_id,count)
         value(#{operator},#{createTime},#{updateTime},#{deleteFlag},#{materialId},#{count});
   </insert>
-  <update id="modify" parameterType="com.jsh.erp.datasource.entities.Product">
+  <update id="modify" parameterType="com.jsh.erp.datasource.entities.shopping.Cart">
     update jsh_shopping_cart
     <set>
       <if test='operator != null'>

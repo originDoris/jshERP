@@ -2,6 +2,8 @@ package com.jsh.erp.datasource.query;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author: origindoris
  * @Title: AddressQuery
@@ -12,5 +14,7 @@ import lombok.Data;
 public class CartQuery {
 
     private Long operator;
+
+    private List<Long> ids;
 
 }

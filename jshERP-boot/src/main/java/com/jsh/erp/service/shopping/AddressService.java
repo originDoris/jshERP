@@ -51,7 +51,9 @@ public class AddressService {
     private UserService userService;
 
 
-    public List<Address> queryList(AddressQuery addressQuery) {
+    public List<Address> queryList(AddressQuery addressQuery) throws Exception {
+        Long userId = userService.getUserId(request);
+        addressQuery.setOperator(userId);
         return addressMapper.queryList(addressQuery);
     }
 
@@ -72,9 +74,25 @@ public class AddressService {
         address.setOperator(userId);
         address.setCreateTime(new Date());
         address.setDeleteFlag("0");
-        address.setDefaultFlag(false);
+        if (address.getDefaultFlag() != null && address.getDefaultFlag()) {
+            AddressQuery addressQuery = new AddressQuery();
+            addressQuery.setOperator(userId);
+            addressQuery.setDefaultFlag(true);
+            List<Address> addresses = queryList(addressQuery);
+            if (addresses != null && !addresses.isEmpty()) {
+                for (Address address1 : addresses) {
+                    address1.setDefaultFlag(false);
+                    modify(address1);
+                }
+            }
+            address.setDefaultFlag(address.getDefaultFlag());
+        }else{
+            address.setDefaultFlag(false);
+        }
         return addressMapper.save(address);
     }
+
+
 
 
     public boolean setDefault(Long id) throws Exception {
@@ -129,6 +147,19 @@ public class AddressService {
         address.setTenantId(tenantId);
         address.setOperator(userId);
         address.setUpdateTime(new Date());
+        if (address.getDefaultFlag() != null && address.getDefaultFlag()) {
+            AddressQuery addressQuery = new AddressQuery();
+            addressQuery.setOperator(userId);
+            addressQuery.setDefaultFlag(true);
+            List<Address> addresses = queryList(addressQuery);
+            if (addresses != null && !addresses.isEmpty()) {
+                for (Address address1 : addresses) {
+                    address1.setDefaultFlag(false);
+                    addressMapper.modify(address1);
+                }
+            }
+            address.setDefaultFlag(address.getDefaultFlag());
+        }
         return addressMapper.modify(address);
     }
 
@@ -149,5 +180,11 @@ public class AddressService {
     }
 
 
+    public boolean batchSave(List<Address> addresses){
+        if (addresses == null || addresses.isEmpty()) {
+            return true;
+        }
+        return addressMapper.batchSave(addresses);
+    }
     
 }

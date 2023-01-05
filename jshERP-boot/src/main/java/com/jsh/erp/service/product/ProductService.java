@@ -2,6 +2,7 @@ package com.jsh.erp.service.product;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jsh.erp.annotation.PageConversion;
 import com.jsh.erp.datasource.entities.Product;
 import com.jsh.erp.datasource.entities.User;
 import com.jsh.erp.datasource.mappers.ProductMapper;
@@ -59,7 +60,7 @@ public class ProductService {
     public static final String CODE_PREFIX = "SP";
 
 
-
+    @PageConversion
     public IPage<Product> queryList(ProductQuery productQuery) {
         Page<Product> stockCheckPage = new Page<>(productQuery.getPageNum(), productQuery.getPageSize());
         return productMapper.queryList(stockCheckPage, productQuery);

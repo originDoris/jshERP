@@ -3,6 +3,7 @@ package com.jsh.erp.service.stockCheck;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jsh.erp.annotation.PageConversion;
 import com.jsh.erp.datasource.entities.Material;
 import com.jsh.erp.datasource.entities.StockCheck;
 import com.jsh.erp.datasource.entities.StockCheck;
@@ -68,6 +69,7 @@ public class StockCheckService {
 
 
 
+    @PageConversion
     public IPage<StockCheck> queryList(StockCheckQuery stockCheckQuery) {
         Page<StockCheck> stockCheckPage = new Page<>(stockCheckQuery.getPageNum(), stockCheckQuery.getPageSize());
         return stockCheckMapper.queryList(stockCheckPage, stockCheckQuery);

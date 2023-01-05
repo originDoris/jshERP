@@ -17,4 +17,10 @@ public class OrderDetail extends DepotHeadVo4List {
     private List<OrderDetailMaterial> orderDetail;
 
     private Address addressInfo;
+
+    private String orderStatus;
+
+    private String orderStatusName;
+
+    private Integer count;
 }

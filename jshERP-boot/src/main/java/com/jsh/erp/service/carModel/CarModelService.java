@@ -3,6 +3,7 @@ package com.jsh.erp.service.carModel;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jsh.erp.annotation.PageConversion;
 import com.jsh.erp.datasource.entities.CarModel;
 import com.jsh.erp.datasource.entities.shopping.CarModelCategory;
 import com.jsh.erp.datasource.entities.User;
@@ -61,7 +62,7 @@ public class CarModelService {
     public static final String CODE_PREFIX = "CX";
 
 
-
+    @PageConversion
     public IPage<CarModel> queryList(CarModelQuery carModelQuery) {
         Page<CarModel> carModelPage = new Page<>(carModelQuery.getPageNum(), carModelQuery.getPageSize());
         return carModelMapper.queryList(carModelPage, carModelQuery);

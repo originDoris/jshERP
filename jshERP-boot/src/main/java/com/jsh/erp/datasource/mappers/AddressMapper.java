@@ -28,6 +28,8 @@ public interface AddressMapper {
 
     boolean save(Address address);
 
+    boolean batchSave(@Param("list") List<Address> addresses);
+
     List<Address> queryByIds(@Param("ids") List<Long> ids);
 
 

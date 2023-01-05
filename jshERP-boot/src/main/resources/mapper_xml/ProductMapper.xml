@@ -215,7 +215,7 @@
     <if test='query.status != null and query.status != ""'>
       and a.status = #{query.status}
     </if>
-    and a.qr_flag = true;
+    and a.qr_flag = true
     and a.delete_flag != '1'
 
   </select>

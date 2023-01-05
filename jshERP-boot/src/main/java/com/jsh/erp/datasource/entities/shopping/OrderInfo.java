@@ -24,4 +24,8 @@ public class OrderInfo extends DepotHeadVo4List {
      * 1 已发货
      */
     private String orderStatus;
+
+    private String orderStatusName;
+
+    private Integer count;
 }

@@ -17,11 +17,18 @@
   <sql id="Base_Column_List">
     id,operator,create_time,update_time,tenant_id,delete_flag,address,phone,name,default_flag
   </sql>
-  <insert id="save" parameterType="com.jsh.erp.datasource.entities.Product">
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.shopping.Address">
     insert into jsh_address (operator,create_time,update_time,delete_flag,address,phone,name,default_flag)
         value(#{operator},#{createTime},#{updateTime},#{deleteFlag},#{address},#{phone},#{name},#{defaultFlag});
   </insert>
-  <update id="modify" parameterType="com.jsh.erp.datasource.entities.Product">
+    <insert id="batchSave">
+      insert into jsh_address (operator,create_time,update_time,delete_flag,address,phone,name,default_flag)
+        values
+                <foreach collection="list" item="address" separator=",">
+                  (#{address.operator},#{address.createTime},#{address.updateTime},#{address.deleteFlag},#{address.address},#{address.phone},#{address.name},#{address.defaultFlag})
+                </foreach>
+    </insert>
+    <update id="modify" parameterType="com.jsh.erp.datasource.entities.shopping.Address">
     update jsh_address
     <set>
       <if test='operator != null'>
@@ -63,6 +70,9 @@
   <select id="queryList" resultMap="BaseResultMap">
     select * from jsh_address
     where delete_flag != '1'
+    <if test='query.id != null'>
+      and id = #{query.id}
+    </if>
     <if test='query.address != null and query.address != ""'>
       and address like concat('%',#{query.address},'%')
     </if>

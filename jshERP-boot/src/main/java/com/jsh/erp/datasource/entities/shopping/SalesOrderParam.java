@@ -12,9 +12,11 @@ import java.util.List;
  * @date: 2022/12/20 14:14
  */
 @Data
-public class SalesOrder implements Serializable {
+public class SalesOrderParam implements Serializable {
 
     private Long addressId;
 
     private List<Cart> carts;
+
+    private String code;
 }

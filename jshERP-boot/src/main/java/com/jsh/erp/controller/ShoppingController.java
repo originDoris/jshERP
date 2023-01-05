@@ -3,14 +3,15 @@ package com.jsh.erp.controller;
 import com.jsh.erp.datasource.entities.CarModel;
 import com.jsh.erp.datasource.entities.Product;
 import com.jsh.erp.datasource.entities.shopping.*;
+import com.jsh.erp.datasource.query.HistoryQuery;
 import com.jsh.erp.datasource.query.ShoppingQuery;
 import com.jsh.erp.exception.BusinessParamCheckingException;
+import com.jsh.erp.service.baidubce.BaidubceService;
+import com.jsh.erp.service.shopping.HistoryService;
 import com.jsh.erp.service.shopping.LoginService;
 import com.jsh.erp.service.shopping.ShoppingService;
 import com.jsh.erp.utils.BaseResponseInfo;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -36,8 +37,14 @@ public class ShoppingController {
     @Resource
     private LoginService loginService;
 
+    @Resource
+    private BaidubceService baidubceService;
+
+    @Resource
+    private HistoryService historyService;
+
     @GetMapping("/query")
-    public BaseResponseInfo query(ShoppingQuery shoppingQuery) throws BusinessParamCheckingException {
+    public BaseResponseInfo query(ShoppingQuery shoppingQuery) throws Exception {
         CarModelCategory carModelCategory = shoppingService.queryCommodityList(shoppingQuery);
         return new BaseResponseInfo(SERVICE_SUCCESS_CODE, carModelCategory);
     }
@@ -118,6 +125,13 @@ public class ShoppingController {
         return new BaseResponseInfo(SERVICE_SUCCESS_CODE, orderInfos);
     }
 
+
+    @PostMapping("/order/preOrder")
+    private BaseResponseInfo preOrder(@RequestBody SalesOrderParam order) throws Exception {
+        SalesOrderInfo salesOrder = shoppingService.getSalesOrder(order);
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, salesOrder);
+    }
+
     @GetMapping("/order/queryUnshipped")
     public BaseResponseInfo queryUnshipped() throws Exception {
         List<OrderInfo> orderInfos = shoppingService.queryOrderList(true);
@@ -132,7 +146,7 @@ public class ShoppingController {
 
 
     @PostMapping("/order/generateSalesOrder")
-    public BaseResponseInfo generateSalesOrder(@RequestBody SalesOrder order) throws Exception {
+    public BaseResponseInfo generateSalesOrder(@RequestBody SalesOrderParam order) throws Exception {
         boolean result = shoppingService.generateSalesOrder(order);
         return new BaseResponseInfo(SERVICE_SUCCESS_CODE, result);
     }
@@ -140,6 +154,45 @@ public class ShoppingController {
     @GetMapping("/wx/login")
     public BaseResponseInfo login(@RequestParam("code") String code) throws Exception {
         return loginService.login(code);
+    }
+
+//    @PostMapping("/ocr")
+//    public BaseResponseInfo ocr(@RequestPart("file") MultipartFile file) throws IOException {
+//        JSONObject ocrData = baidubceService.accurateBasic(file.getBytes());
+//        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, ocrData);
+//    }
+
+    @GetMapping("/history/getList")
+    public BaseResponseInfo getHistoryList() throws Exception {
+        List<HistoryInfo> historyInfos = historyService.queryList();
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, historyInfos);
+    }
+
+    @PostMapping("/history/remove")
+    public BaseResponseInfo removeByIds(@RequestBody HistoryQuery historyQuery) throws Exception {
+        boolean result = historyService.removeByCodes(historyQuery.getCarModelCodes());
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, result);
+    }
+
+
+    @PostMapping("/history/clear")
+    public BaseResponseInfo clear() throws Exception {
+        boolean result = historyService.removeByUserId();
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, result);
+    }
+
+
+    @GetMapping("/setUserPhone")
+    public BaseResponseInfo setUserPhone(@RequestParam("phoneCode") String phoneCode) throws Exception {
+        boolean b = loginService.setUserPhone(phoneCode);
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, b);
+    }
+
+
+    @PostMapping("/importAddress")
+    public BaseResponseInfo importAddress(@RequestBody List<WxAddress> wxAddresses) throws Exception {
+        boolean result = shoppingService.importAddress(wxAddresses);
+        return new BaseResponseInfo(SERVICE_SUCCESS_CODE, result);
     }
 
 }

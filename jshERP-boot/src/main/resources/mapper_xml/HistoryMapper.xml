@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jsh.erp.datasource.mappers.HistoryMapper">
+  <resultMap id="BaseResultMap" type="com.jsh.erp.datasource.entities.shopping.History">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="operator"  property="operator" />
+    <result column="create_time" property="createTime" />
+    <result column="update_time" property="updateTime" />
+    <result column="tenant_id" property="tenantId" />
+    <result column="delete_flag" property="deleteFlag" />
+    <result column="car_model_code" property="carModelCode"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id,operator,create_time,update_time,tenant_id,delete_flag,car_model_code
+  </sql>
+  <insert id="save" parameterType="com.jsh.erp.datasource.entities.shopping.History">
+    insert into jsh_history (operator,create_time,update_time,delete_flag,car_model_code)
+        value(#{operator},#{createTime},#{updateTime},#{deleteFlag},#{carModelCode});
+  </insert>
+  <update id="removeByCodes">
+    update jsh_history set delete_flag = '1'
+    where car_model_code in
+    <foreach collection="carModelCodes" open="(" close=")" item="carModelCode" separator=",">
+      #{carModelCode}
+    </foreach>
+  </update>
+  <update id="removeByUserId">
+    update jsh_history set delete_flag = '1'
+    where operator = #{userId}
+  </update>
+  <select id="queryList" resultMap="BaseResultMap">
+    select * from jsh_history
+    where delete_flag != '1'
+    <if test='userId != null'>
+      and operator = #{userId}
+    </if>
+    order by create_time desc
+  </select>
+
+</mapper>

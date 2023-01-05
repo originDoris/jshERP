@@ -8,13 +8,14 @@ import java.util.Date;
 
 /**
  * @author: origindoris
- * @Title: Address
+ * @Title: History
  * @Description:
- * @date: 2022/12/19 09:55
+ * @date: 2023/1/3 13:37
  */
 @Data
-public class Address implements Serializable {
+public class History implements Serializable {
     private Long id;
+
 
     private Long operator;
 
@@ -28,11 +29,5 @@ public class Address implements Serializable {
 
     private String deleteFlag;
 
-    private String address;
-
-    private String phone;
-
-    private String name;
-
-    private Boolean defaultFlag;
+    private String carModelCode;
 }

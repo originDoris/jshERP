@@ -3,10 +3,8 @@ package com.jsh.erp.service.shopping;
 import com.alibaba.fastjson.JSON;
 import com.jsh.erp.datasource.entities.*;
 import com.jsh.erp.datasource.entities.shopping.*;
-import com.jsh.erp.datasource.mappers.CartMapper;
 import com.jsh.erp.datasource.mappers.MaterialCategoryMapper;
 import com.jsh.erp.datasource.mappers.MaterialMapperEx;
-import com.jsh.erp.datasource.query.CarModelQuery;
 import com.jsh.erp.datasource.query.CartQuery;
 import com.jsh.erp.datasource.query.ShoppingQuery;
 import com.jsh.erp.datasource.vo.DepotHeadVo4List;
@@ -18,8 +16,8 @@ import com.jsh.erp.service.product.ProductService;
 import com.jsh.erp.service.redis.RedisService;
 import com.jsh.erp.service.sequence.SequenceService;
 import com.jsh.erp.service.user.UserService;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -77,6 +75,9 @@ public class ShoppingService {
     @Resource
     private AddressService addressService;
 
+    @Resource
+    private HistoryService historyService;
+
     public static final String HEAD_CODE = "XSDD";
 
 
@@ -97,6 +98,7 @@ public class ShoppingService {
         Address detail = addressService.detail(orderDetail.getAddressId());
         orderDetail.setAddressInfo(detail);
         List<OrderDetailMaterial> materials = new ArrayList<>();
+        int count = 0;
         for (CarModel carModel : carModels) {
             if (carModel == null) {
                 continue;
@@ -112,12 +114,22 @@ public class ShoppingService {
             for (DepotItemVo4WithInfoEx infoEx : infoExes) {
                 OrderMaterial orderMaterial = new OrderMaterial();
                 BeanUtils.copyProperties(infoEx, orderMaterial);
+                count = count + orderMaterial.getBasicNumber().intValue();
                 materialList.add(orderMaterial);
             }
             orderDetailMaterial.setMaterials(materialList);
+
             materials.add(orderDetailMaterial);
         }
+        if ("0".equals(orderDetail.getStatus()) || "1".equals(orderDetail.getStatus())) {
+            orderDetail.setOrderStatus("0");
+            orderDetail.setOrderStatusName("未发货");
+        }else{
+            orderDetail.setOrderStatus("1");
+            orderDetail.setOrderStatusName("已发货");
+        }
         orderDetail.setOrderDetail(materials);
+        orderDetail.setCount(count);
         return orderDetail;
     }
 
@@ -141,6 +153,7 @@ public class ShoppingService {
         Map<Long, Address> addressMap = addresses.stream().collect(Collectors.toMap(Address::getId, v -> v, (k1, k2) -> k1));
 
         List<OrderInfo> result = new ArrayList<>();
+        int count = 0;
         for (DepotHeadVo4List depotHeadVo4List : list) {
             OrderInfo orderInfo = new OrderInfo();
             List<DepotItemVo4WithInfoEx> depotItemVo4WithInfoExes = materialMap.get(depotHeadVo4List.getId());
@@ -154,6 +167,7 @@ public class ShoppingService {
                 OrderMaterial orderMaterial = new OrderMaterial();
                 BeanUtils.copyProperties(depotItemVo4WithInfoEx, orderMaterial);
                 orderMaterials.add(orderMaterial);
+                count = count + orderMaterial.getBasicNumber().intValue();
                 CarModel carModel = carModelMap.get(depotItemVo4WithInfoEx.getCarModelCode());
                 if (carModel == null) {
                     continue;
@@ -163,10 +177,13 @@ public class ShoppingService {
             orderInfo.setOrderMaterials(orderMaterials);
             if ("0".equals(orderInfo.getStatus()) || "1".equals(orderInfo.getStatus())) {
                 orderInfo.setOrderStatus("0");
+                orderInfo.setOrderStatusName("未发货");
             }else{
                 orderInfo.setOrderStatus("1");
+                orderInfo.setOrderStatusName("已发货");
             }
             result.add(orderInfo);
+            orderInfo.setCount(count);
             Address address = addressMap.get(orderInfo.getAddressId());
             orderInfo.setAddressInfo(address);
         }
@@ -177,7 +194,28 @@ public class ShoppingService {
 
 
 
-    public boolean generateSalesOrder(SalesOrder order) throws Exception {
+
+    public SalesOrderInfo getSalesOrder(SalesOrderParam order) throws Exception {
+        List<Cart> cartParams = order.getCarts();
+        List<Long> ids = cartParams.stream().map(Cart::getCartId).collect(Collectors.toList());
+        List<Cart> carts = cartService.queryByIds(ids);
+        CartTotal cartTotal = buildCartDto(carts);
+        SalesOrderInfo salesOrderInfo = new SalesOrderInfo();
+        salesOrderInfo.setCarts(cartTotal.getCartDTOS());
+        salesOrderInfo.setTime(new Date());
+        String headCode = sequenceService.buildOnlyNumber(HEAD_CODE);
+        salesOrderInfo.setCode(headCode);
+        salesOrderInfo.setTotalPrice(cartTotal.getTotalPrice());
+        salesOrderInfo.setTotalCount(cartTotal.getTotalCount().intValue());
+        return salesOrderInfo;
+    }
+
+
+
+
+
+
+    public boolean generateSalesOrder(SalesOrderParam order) throws Exception {
         List<Cart> carts = order.getCarts();
         List<Long> cartIds = carts.stream().map(Cart::getCartId).collect(Collectors.toList());
         carts = cartService.queryByIds(cartIds);
@@ -222,8 +260,11 @@ public class ShoppingService {
     }
 
 
-    private DepotHead generateHead(SalesOrder order, BigDecimal totalPrice) throws Exception {
-        String headCode = sequenceService.buildOnlyNumber(HEAD_CODE);
+    private DepotHead generateHead(SalesOrderParam order, BigDecimal totalPrice) throws Exception {
+        String headCode = order.getCode();
+        if (StringUtils.isBlank(headCode)) {
+            headCode = sequenceService.buildOnlyNumber(HEAD_CODE);
+        }
         DepotHead depotHead = new DepotHead();
         depotHead.setDefaultNumber(headCode);
         depotHead.setNumber(headCode);
@@ -246,9 +287,8 @@ public class ShoppingService {
     }
 
 
-
-
-    public CarModelCategory queryCommodityList(ShoppingQuery shoppingQuery) throws BusinessParamCheckingException {
+    public CarModelCategory queryCommodityList(ShoppingQuery shoppingQuery) throws Exception {
+        Long userId = userService.getUserId(request);
         CarModelCategory result = new CarModelCategory();
         CarModel carModel = carModelService.detailCode(shoppingQuery.getCarModelCode());
         if (carModel == null) {
@@ -287,6 +327,7 @@ public class ShoppingService {
             shoppingCategories.add(shoppingCategory);
         }
         result.setCategories(shoppingCategories);
+        historyService.save(shoppingQuery.getCarModelCode(), userId);
         return result;
     }
 
@@ -373,18 +414,28 @@ public class ShoppingService {
         if (carts == null || carts.isEmpty()) {
             return new ArrayList<>();
         }
+        return buildCartDto(carts).getCartDTOS();
+    }
+
+    public CartTotal buildCartDto(List<Cart> carts) {
+        CartTotal cartTotal = new CartTotal();
+        List<CartDTO> result = new ArrayList<>();
+        BigDecimal totalCount = new BigDecimal(0);
+        BigDecimal totalPrice = new BigDecimal(0);
+        cartTotal.setCartDTOS(result);
+
+        if (carts == null || carts.isEmpty()) {
+            return cartTotal;
+        }
         Map<Long, Cart> categoryMap = carts.stream().collect(Collectors.toMap(Cart::getMaterialId, v -> v, (k1, k2) -> k1));
         Set<Long> materialIds = categoryMap.keySet();
         List<MaterialVo4Unit> materialVo4Units = materialMapperEx.selectByConditionMaterial(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new ArrayList<>(materialIds));
         if (materialVo4Units == null || materialVo4Units.isEmpty()) {
-            return new ArrayList<>();
+            return cartTotal;
         }
         Map<String, List<MaterialVo4Unit>> materialMap = materialVo4Units.stream().collect(Collectors.groupingBy(MaterialVo4Unit::getCarModelCode));
         Set<String> strings = materialMap.keySet();
         List<CarModel> carModels = carModelService.queryByCode(new ArrayList<>(strings));
-
-        List<CartDTO> result = new ArrayList<>();
-
         for (CarModel carModel : carModels) {
             CartDTO cartDTO = new CartDTO();
             String carModelCode = carModel.getCode();
@@ -402,13 +453,60 @@ public class ShoppingService {
                 }
                 BeanUtils.copyProperties(materialVo4Unit, cartMaterial);
                 cartMaterial.setCount(cart.getCount());
+                BigDecimal count = new BigDecimal(cart.getCount());
+                totalCount = totalCount.add(count);
+                totalPrice = totalPrice.add(count.multiply(cartMaterial.getWholesaleDecimal()));
                 cartMaterial.setCartId(cart.getId());
                 materials.add(cartMaterial);
             }
             cartDTO.setMaterials(materials);
             result.add(cartDTO);
         }
-        return result;
+        cartTotal.setTotalCount(totalCount);
+        cartTotal.setTotalPrice(totalPrice);
+        return cartTotal;
+    }
+
+
+    public boolean importAddress(List<WxAddress> wxAddresses) throws Exception {
+        if (wxAddresses == null || wxAddresses.isEmpty()) {
+            return true;
+        }
+        Long userId = userService.getUserId(request);
+        List<Address> addresses = new ArrayList<>();
+        for (WxAddress wxAddress : wxAddresses) {
+            if (wxAddress == null) {
+                continue;
+            }
+            Address address = buildAddress(wxAddress, userId);
+            addresses.add(address);
+        }
+        return addressService.batchSave(addresses);
+    }
+
+    private Address buildAddress(WxAddress wxAddress,Long userId){
+        Address address = new Address();
+        address.setCreateTime(new Date());
+        address.setDeleteFlag("0");
+        address.setDefaultFlag(false);
+        address.setName(wxAddress.getUserName());
+        address.setPhone(wxAddress.getTelNumber());
+        address.setOperator(userId);
+        StringBuilder detail = new StringBuilder();
+        if (StringUtils.isNotBlank(wxAddress.getProvinceName())) {
+            detail.append(wxAddress.getProvinceName()).append(" ");
+        }
+        if (StringUtils.isNotBlank(wxAddress.getCityName())) {
+            detail.append(wxAddress.getCityName()).append(" ");
+        }
+        if (StringUtils.isNotBlank(wxAddress.getCountyName())) {
+            detail.append(wxAddress.getCountyName()).append(" ");
+        }
+        if (StringUtils.isNotBlank(wxAddress.getDetailInfo())) {
+            detail.append("\n").append(wxAddress.getDetailInfo());
+        }
+        address.setAddress(detail.toString());
+        return address;
     }
 
 

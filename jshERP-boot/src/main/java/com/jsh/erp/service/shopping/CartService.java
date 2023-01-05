@@ -19,6 +19,7 @@ import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,16 +61,16 @@ public class CartService {
     }
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public boolean save(Cart address) throws Exception {
-        verifyParam(address);
+    public boolean save(Cart cart) throws Exception {
+        verifyParam(cart);
         Long userId = userService.getUserId(request);
         String token = request.getHeader(ACCESS_TOKEN);
         Long tenantId = Tools.getTenantIdByToken(token);
-        address.setTenantId(tenantId);
-        address.setOperator(userId);
-        address.setCreateTime(new Date());
-        address.setDeleteFlag("0");
-        return cartMapper.save(address);
+        cart.setTenantId(tenantId);
+        cart.setOperator(userId);
+        cart.setCreateTime(new Date());
+        cart.setDeleteFlag("0");
+        return cartMapper.save(cart);
     }
 
 
@@ -91,18 +92,18 @@ public class CartService {
 
 
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public boolean modify(Cart address) throws Exception {
-        verifyParam(address);
-        if (address.getId() == null) {
+    public boolean modify(Cart cart) throws Exception {
+        verifyParam(cart);
+        if (cart.getId() == null) {
             throw new BusinessParamCheckingException(CART_ID_IS_NULL_CODE, CART_ID_IS_NULL_MSG);
         }
         Long userId = userService.getUserId(request);
         String token = request.getHeader(ACCESS_TOKEN);
         Long tenantId = Tools.getTenantIdByToken(token);
-        address.setTenantId(tenantId);
-        address.setOperator(userId);
-        address.setUpdateTime(new Date());
-        return cartMapper.modify(address);
+        cart.setTenantId(tenantId);
+        cart.setOperator(userId);
+        cart.setUpdateTime(new Date());
+        return cartMapper.modify(cart);
     }
 
 
@@ -122,6 +123,9 @@ public class CartService {
 
 
     public List<Cart> queryByIds(List<Long> ids){
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
         return cartMapper.queryByIds(ids);
     }
     

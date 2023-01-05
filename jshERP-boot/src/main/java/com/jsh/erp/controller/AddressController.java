@@ -53,7 +53,7 @@ public class AddressController {
     }
 
     @GetMapping("/queryList")
-    public BaseResponseInfo queryList(AddressQuery addressQuery) {
+    public BaseResponseInfo queryList(AddressQuery addressQuery) throws Exception {
         List<Address> result = addressService.queryList(addressQuery);
         return new BaseResponseInfo(SERVICE_SUCCESS_CODE, result);
     }
