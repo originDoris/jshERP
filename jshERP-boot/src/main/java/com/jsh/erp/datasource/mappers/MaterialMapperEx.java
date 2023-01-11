@@ -34,6 +34,9 @@ public interface MaterialMapperEx {
             @Param("carModelCode") String carModelCode,
             @Param("mIds") List<Long> ids);
 
+
+    MaterialVo4Unit queryByBarCode(@Param("barCode") String barCode);
+
     Long countsByMaterial(
             @Param("materialParam") String materialParam,
             @Param("color") String color,

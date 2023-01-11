@@ -4,18 +4,15 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jsh.erp.annotation.PageConversion;
-import com.jsh.erp.datasource.entities.Material;
+import com.jsh.erp.datasource.entities.*;
 import com.jsh.erp.datasource.entities.StockCheck;
-import com.jsh.erp.datasource.entities.StockCheck;
-import com.jsh.erp.datasource.entities.User;
-import com.jsh.erp.datasource.mappers.CarModelMapper;
-import com.jsh.erp.datasource.mappers.MaterialMapper;
-import com.jsh.erp.datasource.mappers.MaterialMapperEx;
-import com.jsh.erp.datasource.mappers.StockCheckMapper;
+import com.jsh.erp.datasource.mappers.*;
 import com.jsh.erp.datasource.query.StockCheckQuery;
 import com.jsh.erp.exception.BusinessParamCheckingException;
 import com.jsh.erp.service.carModel.excel.CarModelReadExcel;
 import com.jsh.erp.service.carModel.excel.CarModelWriteExcel;
+import com.jsh.erp.service.material.MaterialService;
+import com.jsh.erp.service.materialExtend.MaterialExtendService;
 import com.jsh.erp.service.sequence.SequenceService;
 import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.EasyExcelUtil;
@@ -64,6 +61,10 @@ public class StockCheckService {
     @Resource
     private SequenceService sequenceService;
 
+    @Resource
+    private MaterialMapperEx materialMapperEx;
+
+
 
     public static final String CODE_PREFIX = "PD";
 
@@ -100,6 +101,11 @@ public class StockCheckService {
     }
 
     private void inventory(StockCheck stockCheck) throws BusinessParamCheckingException {
+        MaterialVo4Unit materialVo4Unit = materialMapperEx.queryByBarCode(stockCheck.getBarCode());
+        if (materialVo4Unit == null) {
+            throw new BusinessParamCheckingException(CHECK_MATERIAL_IS_NULL_CODE, CHECK_MATERIAL_IS_NULL_MSG);
+        }
+        stockCheck.setMaterialId(materialVo4Unit.getId());
         BigDecimal price = stockCheck.getPrice();
         Long stockNumber = stockCheck.getStockNumber();
         Long realStockNumber = stockCheck.getRealStockNumber();

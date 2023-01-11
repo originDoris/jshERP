@@ -46,6 +46,8 @@ public class StockCheck implements Serializable {
 
     private Long materialId;
 
+    private String barCode;
+
     private String depotName;
 
     private String materialName;

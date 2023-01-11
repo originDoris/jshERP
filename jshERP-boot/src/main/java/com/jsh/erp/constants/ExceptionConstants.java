@@ -558,8 +558,8 @@ public class ExceptionConstants {
     public static final String CHECK_ID_LIST_IS_NULL_MSG = "盘点id列表不能为空！";
     public static final int CHECK_PARAM_ERROR = 4104;
 
-    public static final int MATERIAL_IS_NULL_CODE = 4105;
-    public static final String MATERIAL_IS_NULL_MSG = "盘点信息为空！";
+    public static final int CHECK_MATERIAL_IS_NULL_CODE = 4105;
+    public static final String CHECK_MATERIAL_IS_NULL_MSG = "盘点商品信息为空！";
 
     /**
      * 商品信息 4300 ～ 4400
